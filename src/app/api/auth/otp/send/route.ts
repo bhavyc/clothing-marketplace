@@ -46,9 +46,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-    const token = process.env.WHATSAPP_ACCESS_TOKEN;
-    const businessId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID;
+    const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID?.replace(/^"|"$/g, "");
+    const token = process.env.WHATSAPP_ACCESS_TOKEN?.replace(/^"|"$/g, "");
+    const businessId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID?.replace(/^"|"$/g, "");
 
     let sentViaWhatsApp = false;
     let metaResponseLog = "";
