@@ -227,10 +227,10 @@ export default async function ShopPage({
         
         {/* Page Header */}
         <div className="text-left mb-10 border-b border-[#FAF5EC] pb-6">
-          <h1 className="font-serif text-4xl text-brand-charcoal font-semibold lowercase tracking-wide">
+          <h1 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase tracking-wide">
             the <span className="font-normal italic text-brand-gold">catalog</span>
           </h1>
-          <p className="font-sans text-[11px] text-gray-500 uppercase tracking-widest mt-1">
+          <p className="font-sans text-[10px] sm:text-[11px] text-gray-500 uppercase tracking-widest mt-1">
             {productsToDisplay.length} exquisite silhouette{productsToDisplay.length === 1 ? "" : "s"} found
           </p>
         </div>
@@ -499,13 +499,15 @@ export default async function ShopPage({
           <main className="lg:col-span-9 space-y-6">
             
             {/* Sort Controls */}
-            <div className="flex justify-between items-center bg-[#FAF6F0] p-4 rounded-md border border-[#E8DFC8]">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#FAF6F0] p-4 rounded-md border border-[#E8DFC8] gap-3 sm:gap-0">
               <div className="text-xs text-gray-500 font-sans tracking-wide">
                 Showing <strong className="text-brand-charcoal">{productsToDisplay.length}</strong> results
               </div>
-              <div className="flex items-center space-x-2">
-                <ArrowUpDown className="h-3.5 w-3.5 text-brand-gold" />
-                <span className="text-xs font-sans text-brand-charcoal uppercase tracking-wider font-semibold">Sort:</span>
+              <div className="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">
+                <div className="flex items-center space-x-2">
+                  <ArrowUpDown className="h-3.5 w-3.5 text-brand-gold" />
+                  <span className="text-xs font-sans text-brand-charcoal uppercase tracking-wider font-semibold">Sort:</span>
+                </div>
                 <SortSelector defaultValue={sort} />
               </div>
             </div>
@@ -524,7 +526,7 @@ export default async function ShopPage({
               </div>
             ) : (
               <div className="space-y-10">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                   {paginatedProducts.map((p) => (
                     <ProductCard key={p.id} product={p as any} />
                   ))}

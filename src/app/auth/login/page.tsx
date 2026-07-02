@@ -149,10 +149,10 @@ function SignInForm() {
   };
 
   return (
-    <div className="flex min-h-[85vh] flex-col justify-center py-12 sm:px-6 lg:px-8 bg-brand-cream">
+    <div className="flex min-h-[85vh] flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-brand-cream">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="text-center font-serif text-3xl md:text-4xl font-semibold tracking-wider text-brand-charcoal lowercase">
-          vamika <span className="font-serif italic text-brand-gold font-normal">&</span> bhargavi
+          vamika <span className="font-serif italic text-brand-gold font-normal">&amp;</span> bhargavi
         </h2>
         <p className="mt-3 text-center text-[10px] font-sans tracking-widest text-gray-500 uppercase">
           Welcome back to the label
@@ -160,7 +160,7 @@ function SignInForm() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-brand-cream-dark px-6 py-10 shadow-lg border border-[#F0E6D2] sm:rounded-lg sm:px-12">
+        <div className="bg-brand-cream-dark px-6 py-10 shadow-lg border border-[#F0E6D2] rounded-md sm:rounded-lg sm:px-12">
           
           {/* Login Method Toggle Tab */}
           <div className="flex justify-center mb-8 border-b border-[#E8DFC8]">

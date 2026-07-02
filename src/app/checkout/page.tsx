@@ -398,7 +398,7 @@ function CheckoutContent() {
         
         {/* Title */}
         <div className="mb-10 text-left border-b border-[#FAF5EC] pb-6">
-          <h1 className="font-serif text-4xl text-brand-charcoal font-semibold lowercase tracking-wide">
+          <h1 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase tracking-wide">
             secure <span className="font-normal italic text-brand-gold">checkout</span>
           </h1>
         </div>
@@ -539,26 +539,26 @@ function CheckoutContent() {
                 <h2 className="font-serif text-lg text-brand-charcoal font-semibold border-b border-[#E8DFC8] pb-3 lowercase tracking-wide">
                   store credits
                 </h2>
-                <div className="bg-white p-4 border border-[#E8DFC8] rounded-md flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                <div className="bg-white p-4 border border-[#E8DFC8] rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                  <div className="flex items-start space-x-3">
                     <input
                       id="useWallet"
                       type="checkbox"
                       disabled={walletBalance <= 0}
                       checked={useWallet && walletBalance > 0}
                       onChange={(e) => setUseWallet(e.target.checked)}
-                      className="h-4 w-4 rounded border-[#E8DFC8] text-brand-gold focus:ring-brand-gold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="h-4 w-4 rounded border-[#E8DFC8] text-brand-gold focus:ring-brand-gold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed mt-0.5"
                     />
-                    <label htmlFor="useWallet" className={`block text-xs font-sans font-bold uppercase tracking-wider cursor-pointer ${walletBalance <= 0 ? 'text-gray-400 cursor-not-allowed' : 'text-brand-charcoal'}`}>
+                    <label htmlFor="useWallet" className={`block text-xs font-sans font-bold uppercase tracking-wider cursor-pointer leading-normal ${walletBalance <= 0 ? 'text-gray-400 cursor-not-allowed' : 'text-brand-charcoal'}`}>
                       Use Store Credits / Wallet Balance (Available: Rs. {walletBalance.toLocaleString("en-IN")})
                     </label>
                   </div>
                   {walletBalance > 0 ? (
-                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-brand-gold bg-brand-cream-dark px-2.5 py-1 rounded">
+                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-brand-gold bg-brand-cream-dark px-2.5 py-1 rounded shrink-0">
                       Save on checkout
                     </span>
                   ) : (
-                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-gray-400 bg-stone-100 px-2.5 py-1 rounded">
+                    <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-gray-400 bg-stone-100 px-2.5 py-1 rounded shrink-0">
                       0 Balance
                     </span>
                   )}

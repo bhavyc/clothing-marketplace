@@ -342,10 +342,10 @@ export default async function Home({
       {/* Featured Collections / Categories */}
       <section className="py-6 overflow-hidden">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-12 lg:px-16 mb-4">
-          <div className="w-full" style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+          <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
             <div className="text-left space-y-1.5">
               <p className="text-[11px] text-brand-gold uppercase tracking-[0.2em] font-sans font-bold">Curated Closets</p>
-              <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
+              <h2 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
                 shop by <span className="font-normal italic text-brand-gold">collection</span>
               </h2>
             </div>
@@ -363,16 +363,16 @@ export default async function Home({
       </section>
 
       {/* Dynamic Bestsellers Shelf */}
-      <section className="bg-[#FAF6F0] py-20 border-t border-b border-[#E8DFC8]">
+      <section className="bg-[#FAF6F0] py-10 sm:py-20 border-t border-b border-[#E8DFC8]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-12 lg:px-16">
-          <div className="mb-12 w-full" style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1.5rem" }}>
-            <div className="text-left space-y-3">
+          <div className="mb-8 sm:mb-12 w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+            <div className="text-left space-y-2 sm:space-y-3">
               <p className="text-[11px] text-brand-gold uppercase tracking-widest font-sans font-bold">Highly Coveted</p>
-              <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
+              <h2 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
                 the bestsellers <span className="font-normal italic text-brand-gold">shelf</span>
               </h2>
             </div>
-            <div className="flex gap-6 items-center">
+            <div className="flex gap-4 sm:gap-6 items-center flex-wrap">
               <Link
                 href={`/shop?collection=Bestsellers&mode=${mode}`}
                 className="inline-flex items-center text-xs font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-0.5 hover:border-brand-gold"
@@ -395,23 +395,23 @@ export default async function Home({
       </section>
 
       {/* Premium Bespoke / Custom Styling Section */}
-      <section className="bg-brand-charcoal text-brand-cream py-20 lg:py-28 overflow-hidden relative border-t border-stone-850">
+      <section className="bg-brand-charcoal text-brand-cream py-12 sm:py-20 lg:py-28 overflow-hidden relative border-t border-stone-850">
         <div className="absolute inset-0 bg-stone-900 opacity-20 pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* Content Left */}
-          <div className="lg:col-span-7 space-y-6 text-left">
+          <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left order-2 lg:order-1">
             <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-brand-gold">
               Bespoke Services
             </span>
-            <h2 className="font-serif text-4xl sm:text-5xl text-white font-medium lowercase leading-tight">
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl text-white font-medium lowercase leading-tight">
               personal styling <span className="font-normal italic text-brand-gold">&</span> custom tailoring
             </h2>
             <div className="h-0.5 w-12 bg-brand-gold" />
-            <p className="font-sans text-xs sm:text-sm text-stone-300 uppercase tracking-widest leading-relaxed max-w-xl">
+            <p className="font-sans text-[11px] sm:text-xs sm:text-sm text-stone-300 uppercase tracking-widest leading-relaxed max-w-xl">
               At Vamika & Bhargavi, we believe in perfect silhouettes that fit you flawlessly. Enjoy complimentary size customisation, length adjustments, and direct styling consultations with our designers to bring your dream outfit to life.
             </p>
-            <div className="pt-4 flex flex-col sm:flex-row gap-4">
+            <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row gap-4">
               <a
                 href="https://wa.me/919999999999?text=Hi!%20I%27d%20like%20to%20discuss%20a%20custom%20styling%20request%20with%20Vamika%20%26%20Bhargavi."
                 target="_blank"
@@ -430,7 +430,7 @@ export default async function Home({
           </div>
 
           {/* Image Right */}
-          <div className="lg:col-span-5 relative flex justify-center">
+          <div className="lg:col-span-5 relative flex justify-center order-1 lg:order-2">
             <div className="relative w-full max-w-[400px] aspect-[4/3] sm:aspect-[4/3] md:aspect-[3/2] lg:aspect-[3/4] border border-stone-800 rounded-md shadow-2xl overflow-hidden bg-stone-900">
               <img
                 src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=700&q=80"

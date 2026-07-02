@@ -273,7 +273,7 @@ export default function MyOrdersPage() {
         {/* Title Section */}
         <div className="mb-10 text-left border-b border-[#FAF5EC] pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="font-serif text-4xl text-brand-charcoal font-semibold lowercase tracking-wide">
+            <h1 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase tracking-wide">
               my <span className="font-normal italic text-brand-gold">orders</span>
             </h1>
             <p className="font-sans text-[10px] text-gray-500 uppercase tracking-widest mt-1">

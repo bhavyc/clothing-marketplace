@@ -206,12 +206,12 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
         <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-12 gap-4">
           
           {/* Vertical Thumbnail List */}
-          <div className="md:col-span-2 flex md:flex-col flex-row gap-2 order-2 md:order-1 overflow-x-auto md:overflow-x-visible">
+          <div className="md:col-span-2 flex md:flex-col flex-row gap-2 order-2 md:order-1 overflow-x-auto md:overflow-x-visible scrollbar-none pb-2 md:pb-0">
             {images.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setActiveImage(img)}
-                className={`w-18 aspect-[3/4] rounded border flex-shrink-0 bg-brand-cream-dark overflow-hidden transition-all ${
+                className={`w-14 md:w-18 aspect-[3/4] rounded border flex-shrink-0 bg-brand-cream-dark overflow-hidden transition-all ${
                   activeImage === img ? "border-brand-gold ring-1 ring-brand-gold" : "border-[#E8DFC8] hover:border-brand-gold"
                 }`}
               >
@@ -235,7 +235,7 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
                 {product.category}
               </span>
             </div>
-            <h1 className="font-serif text-3xl font-semibold text-brand-charcoal tracking-wide mt-2">
+            <h1 className="font-serif text-2xl sm:text-3xl font-semibold text-brand-charcoal tracking-wide mt-2">
               {product.title}
             </h1>
             
@@ -395,7 +395,7 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
                 href={getWhatsAppLink()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex justify-center items-center border border-[#A59578] rounded-md bg-white py-3 px-6 text-xs font-sans uppercase font-bold tracking-widest text-brand-gold hover:bg-[#FAF5EC] transition-all"
+                className="flex-1 inline-flex justify-center items-center border border-[#A59578] rounded-md bg-white py-3 px-6 text-xs font-sans uppercase font-bold tracking-widest text-brand-gold hover:bg-[#FAF5EC] transition-all"
               >
                 <MessageSquare className="h-4 w-4 mr-2 fill-brand-gold text-brand-gold" />
                 Custom Order / Stitching

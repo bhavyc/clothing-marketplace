@@ -14,11 +14,11 @@ export default async function AboutPage({
   return (
     <div className="bg-brand-cream-dark min-h-screen">
       {/* Hero Section */}
-      <section className="py-24 px-4 text-center max-w-4xl mx-auto space-y-6">
+      <section className="py-14 sm:py-24 px-4 text-center max-w-4xl mx-auto space-y-6">
         <p className="text-xs uppercase tracking-[0.25em] font-sans font-bold text-brand-gold animate-pulse">
           {mode === "LUXE" ? "A Legacy of Luxury" : "Handcrafted Slow Fashion"}
         </p>
-        <h1 className="font-serif text-4xl sm:text-6xl text-brand-charcoal font-semibold lowercase tracking-tight leading-none">
+        <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-brand-charcoal font-semibold lowercase tracking-tight leading-none">
           the story of <span className="font-normal italic text-brand-gold">vamika & bhargavi</span>
         </h1>
         <div className="w-16 h-0.5 bg-brand-gold mx-auto my-4" />
@@ -42,7 +42,7 @@ export default async function AboutPage({
 
           {/* Text side */}
           <div className="space-y-6 text-left">
-            <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold tracking-wide lowercase">
+            <h2 className="font-serif text-2.5xl sm:text-4xl text-brand-charcoal font-semibold tracking-wide lowercase">
               our boutique <span className="italic font-normal text-brand-gold">origins</span>
             </h2>
             <div className="w-12 h-0.5 bg-brand-gold" />
