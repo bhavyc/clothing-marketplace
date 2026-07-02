@@ -1,0 +1,207 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String         @id @default(uuid())
+  name              String?
+  email             String         @unique
+  password          String
+  role              String         @default("CUSTOMER") // "CUSTOMER", "SELLER", "ADMIN"
+  resetOtp          String?
+  resetOtpExpires   DateTime?
+  walletBalance     Float          @default(0.0)
+  phone             String?        @unique
+  optInWhatsApp     Boolean        @default(false)
+  optInDate         DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  sellerProfile     SellerProfile?
+  orders            Order[]
+  couponSentList    CouponSent[]
+}
+
+model SellerProfile {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shopName     String
+  description  String?
+  logoUrl      String?
+  bannerUrl    String?
+  isApproved   Boolean   @default(false)
+  bankName     String?
+  bankAccount  String?
+  bankIfsc     String?
+  products     Product[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Product {
+  id              String           @id @default(uuid())
+  title           String
+  description     String
+  images          String           // Stored as JSON string of image URLs
+  category        String           // e.g., "Pheran Set", "Saree", "Kurta"
+  collection      String?          // e.g., "Bestsellers", "New Arrivals"
+  fabricDetails   String?
+  careInstructions String?
+  deliveryTimeline String          @default("10-15 Days")
+  isSet           Boolean          @default(false)
+  tier            String           @default("LUXE") // "LUXE" or "INDI"
+  topLength       String?
+  pantLength      String?
+  sleeveLength    String?
+  isBestseller    Boolean          @default(false) // Manual override by Admin
+  sizeChartType   String           @default("STANDARD") // "STANDARD", "IMAGE", "CUSTOM"
+  sizeChartData   String?          // Image URL if sizeChartType is "IMAGE", JSON measurements if "CUSTOM"
+  sellerId        String
+  seller          SellerProfile    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  variants        ProductVariant[]
+  options         ProductOption[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id          String      @id @default(uuid())
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  topSize     String?     // S, M, L, XL, Custom
+  bottomSize  String?     // S, M, L, XL, Custom (For coordinate sets)
+  price       Float       // Price for this specific size variant
+  stock       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model ProductOption {
+  id              String   @id @default(uuid())
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  optionName      String   // e.g., "Dupatta"
+  optionValue     String   // e.g., "With Dupatta", "Without Dupatta"
+  priceAdjustment Float    @default(0.0) // Dynamic price change, e.g. +1500.00
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  code            String   @unique // e.g. "PAY5"
+  description     String?
+  discountPercent Float    @default(0.0) // e.g. 5.0 for 5%
+  discountAmount  Float    @default(0.0)
+  minOrderValue   Float    @default(0.0)
+  isPrepaidOnly   Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  startTime       DateTime?
+  endTime         DateTime?
+  usageLimit      Int      @default(999999)
+  currentUsage    Int      @default(0)
+  triggerFreeGift Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  couponSentList  CouponSent[]
+}
+
+model GiftCard {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  balance   Float
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique // e.g. "KSH-10001"
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  shippingAddress String
+  city            String
+  state           String
+  pincode         String
+  subtotal        Float
+  discountAmount  Float       @default(0.0)
+  totalAmount     Float
+  paymentType     String      @default("PREPAID") // "PREPAID", "COD"
+  paymentStatus   String      @default("PENDING") // "PENDING", "PAID", "FAILED"
+  paymentId       String?     // Gateway Transaction ID
+  status          String      @default("PLACED") // "PLACED", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"
+  trackingCompany String?
+  trackingNumber  String?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  walletPaid      Float       @default(0.0)
+  couponUsed      String?
+  hasFreeGift     Boolean     @default(false)
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id              String         @id @default(uuid())
+  orderId         String
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId       String
+  variant         ProductVariant @relation(fields: [variantId], references: [id])
+  quantity        Int
+  priceAtPurchase Float          // Exact price paid for this item
+  selectedOptions String?        // JSON string describing chosen options, e.g. "Dupatta: With Dupatta (+1500)"
+  returnStatus    String         @default("NONE") // "NONE", "RETURN_REQUESTED", "RETURN_APPROVED", "RETURNED", "RETURN_REJECTED"
+  returnQuantity  Int            @default(0)
+  returnReason    String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model Campaign {
+  id           String       @id @default(uuid())
+  name         String
+  bannerUrl    String
+  captionText  String
+  couponCode   String
+  segmentTag   String       @default("ALL") // "ALL", "VIP", etc.
+  templateName String?
+  status       String       @default("PENDING") // "PENDING", "APPROVED", "REJECTED"
+  rejectReason String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  messageLogs  MessageLog[]
+}
+
+model MessageLog {
+  id         String   @id @default(uuid())
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  userId     String
+  status     String   @default("SENT") // "SENT", "DELIVERED", "READ", "FAILED"
+  updatedAt  DateTime @updatedAt
+}
+
+model CouponSent {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  couponId      String
+  coupon        Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  sentAt        DateTime @default(now())
+  used          Boolean  @default(false)
+  reminderCount Int      @default(0)
+}
