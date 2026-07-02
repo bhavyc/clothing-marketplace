@@ -12,7 +12,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#FAF6F0] border-t border-[#E8DFC8] py-14 px-6 mt-auto">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         
         {/* Brand Column */}
         <div className="space-y-4">
@@ -114,31 +114,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Boutique Support Column */}
-        <div className="space-y-4 text-left">
-          <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
-            Boutique Support
-          </h4>
-          <div className="space-y-2.5 text-xs text-stone-600 font-sans">
-            <div className="flex items-center gap-2">
-              <Mail className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-              <a href="mailto:care@vamikabhargavi.com" className="hover:text-brand-gold transition-colors">
-                care@vamikabhargavi.com
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-              <span>+91 99999 88888</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-              <span>Mon - Sat | 10 AM - 7 PM IST</span>
-            </div>
-          </div>
-          <p className="font-sans text-[10px] text-stone-500 leading-relaxed pt-2 border-t border-brand-gold/10">
-            All orders are hand-tailored and custom stitched. We stand by our authentic fabrics & secure payments.
-          </p>
-        </div>
+
 
       </div>
       
