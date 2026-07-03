@@ -48,6 +48,10 @@ export async function POST(req: NextRequest) {
 
     const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID?.replace(/^"|"$/g, "");
     const token = process.env.WHATSAPP_ACCESS_TOKEN?.replace(/^"|"$/g, "");
+    // YE ADD KARO
+console.log("Phone ID:", phoneId)
+console.log("Token first 20 chars:", token?.slice(0, 20))
+console.log("Token length:", token?.length)
     const businessId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID?.replace(/^"|"$/g, "");
 
     let sentViaWhatsApp = false;

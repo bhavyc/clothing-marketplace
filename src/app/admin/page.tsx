@@ -2142,14 +2142,19 @@ export default function AdminDashboard() {
                         <label className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
                           Coupon Code
                         </label>
-                        <input
-                          type="text"
-                          placeholder="7MINUTES"
+                        <select
                           value={campaignCouponCode}
                           onChange={(e) => setCampaignCouponCode(e.target.value)}
-                          className="mt-1 block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none"
+                          className="mt-1 block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none cursor-pointer font-sans"
                           required
-                        />
+                        >
+                          <option value="">Select a coupon...</option>
+                          {coupons.map((c) => (
+                            <option key={c.id} value={c.code}>
+                              {c.code} ({c.discountPercent > 0 ? `${c.discountPercent}%` : `Rs. ${c.discountAmount}`} off)
+                            </option>
+                          ))}
+                        </select>
                       </div>
                       <div>
                         <label className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
