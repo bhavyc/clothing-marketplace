@@ -186,35 +186,6 @@ export async function POST(
       console.log(`==================================================\n`);
     }
 
-    // 5. Trigger async webhook simulations (simulating Meta WhatsApp response hooks)
-    // We update statuses in the background to show real-time progress to the admin
-    createdLogs.forEach((log) => {
-      // Simulate DELIVERED webhook callback after 2 seconds
-      setTimeout(async () => {
-        try {
-          await prisma.messageLog.update({
-            where: { id: log.id },
-            data: { status: "DELIVERED" },
-          });
-          console.log(`💬 [WHATSAPP WEBHOOK SIMULATOR] Message ${log.id} status updated to DELIVERED`);
-        } catch (e) {
-          // ignore async errors
-        }
-      }, 3000);
-
-      // Simulate READ webhook callback after 5 seconds
-      setTimeout(async () => {
-        try {
-          await prisma.messageLog.update({
-            where: { id: log.id },
-            data: { status: "READ" },
-          });
-          console.log(`💬 [WHATSAPP WEBHOOK SIMULATOR] Message ${log.id} status updated to READ`);
-        } catch (e) {
-          // ignore async errors
-        }
-      }, 7000);
-    });
 
     return NextResponse.json({
       success: true,
