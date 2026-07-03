@@ -163,9 +163,39 @@ export async function POST(
           
           const responseData = await response.json();
           if (response.ok) {
-            console.log(`✅ Real WhatsApp campaign broadcast successfully sent via Meta API to ${user.phone}`);
+            console.log(`✅ Campaign broadcast sent via Meta API to ${user.phone}`);
           } else {
-            console.error(`❌ Real WhatsApp campaign broadcast failed for ${user.phone}:`, JSON.stringify(responseData));
+            console.error(`❌ Template send failed for ${user.phone}:`, JSON.stringify(responseData));
+            // Fallback: send as plain text message
+            console.log(`Attempting text fallback for campaign to ${user.phone}...`);
+            try {
+              const textRes = await fetch(
+                `https://graph.facebook.com/v18.0/${phoneId}/messages`,
+                {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    messaging_product: "whatsapp",
+                    to: formattedPhone,
+                    type: "text",
+                    text: {
+                      body: `🛍️ *Vamika & Bhargavi* — Exclusive Campaign!\n\nUse coupon code *${campaign.couponCode}* to get a special discount on orders above ₹${coupon?.minOrderValue || "3000"}.\n\nShop now: ${campaign.bannerUrl}\n\nHurry, limited time only! ⏳`,
+                    },
+                  }),
+                }
+              );
+              const textData = await textRes.json();
+              if (textRes.ok) {
+                console.log(`✅ Text fallback sent successfully to ${user.phone}`);
+              } else {
+                console.error(`❌ Text fallback also failed for ${user.phone}:`, JSON.stringify(textData));
+              }
+            } catch (fbErr) {
+              console.error(`Text fallback error for ${user.phone}:`, fbErr);
+            }
           }
         } catch (metaErr) {
           console.error(`Failed to call Meta API for campaign broadcast on ${user.phone}:`, metaErr);
