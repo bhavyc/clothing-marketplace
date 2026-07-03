@@ -182,7 +182,7 @@ export async function POST(
                     to: formattedPhone,
                     type: "text",
                     text: {
-                      body: `🛍️ *Vamika & Bhargavi* — Exclusive Campaign!\n\nUse coupon code *${campaign.couponCode}* to get a special discount on orders above ₹${coupon?.minOrderValue || "3000"}.\n\nShop now: ${campaign.bannerUrl}\n\nHurry, limited time only! ⏳`,
+                      body: `🛍️ *Vamika & Bhargavi* — Exclusive Campaign!\n\nUse coupon code *${campaign.couponCode}* to get a special discount on orders above ₹${coupon?.minOrderValue || "3000"}.\n\nShop now: ${process.env.NEXTAUTH_URL || "http://localhost:3000"}/shop?coupon=${campaign.couponCode}\n\nHurry, limited time only! ⏳`,
                     },
                   }),
                 }
