@@ -172,18 +172,6 @@ export async function POST(
         }
       }
 
-      // Print info to next.js backend logs (Simulated console view)
-      console.log(`\n==================================================`);
-      console.log(`🟢 [META WHATSAPP BUSINESS API CALLED]`);
-      console.log(`To: ${user.phone}`);
-      console.log(`Template Name: ${campaign.templateName}`);
-      console.log(`Language: en_US`);
-      console.log(`Components: [`);
-      console.log(`  { type: "header", parameters: [{ type: "image", image: { link: "${campaign.bannerUrl}" } }] },`);
-      console.log(`  { type: "body", parameters: [{ type: "text", text: "${campaign.couponCode}" }, { type: "text", text: "${coupon?.minOrderValue || '3000'}" }] },`);
-      console.log(`  { type: "button", sub_type: "url", index: 0, parameters: [{ type: "text", text: "?coupon=${campaign.couponCode}&utm_source=whatsapp" }] }`);
-      console.log(`]`);
-      console.log(`==================================================\n`);
     }
 
 
