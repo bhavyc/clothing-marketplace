@@ -114,7 +114,65 @@ export async function POST(
         });
       }
 
-      // Simulate sending WhatsApp payload using Meta's templating structure
+      // 4. Send real Meta WhatsApp Template message
+      const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID?.replace(/^"|"$/g, "");
+      const token = process.env.WHATSAPP_ACCESS_TOKEN?.replace(/^"|"$/g, "");
+
+      if (phoneId && token && user.phone) {
+        const formattedPhone = user.phone.replace("+", "");
+        try {
+          const response = await fetch(
+            `https://graph.facebook.com/v18.0/${phoneId}/messages`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                messaging_product: "whatsapp",
+                recipient_type: "individual",
+                to: formattedPhone,
+                type: "template",
+                template: {
+                  name: campaign.templateName,
+                  language: { code: "en_US" },
+                  components: [
+                    {
+                      type: "header",
+                      parameters: [{ type: "image", image: { link: campaign.bannerUrl } }]
+                    },
+                    {
+                      type: "body",
+                      parameters: [
+                        { type: "text", text: campaign.couponCode },
+                        { type: "text", text: String(coupon?.minOrderValue || "3000") }
+                      ]
+                    },
+                    {
+                      type: "button",
+                      sub_type: "url",
+                      index: 0,
+                      parameters: [{ type: "text", text: `?coupon=${campaign.couponCode}&utm_source=whatsapp` }]
+                    }
+                  ]
+                }
+              }),
+            }
+          );
+          
+          const responseData = await response.json();
+          if (response.ok) {
+            console.log(`✅ Real WhatsApp campaign broadcast successfully sent via Meta API to ${user.phone}`);
+          } else {
+            console.error(`❌ Real WhatsApp campaign broadcast failed for ${user.phone}:`, JSON.stringify(responseData));
+          }
+        } catch (metaErr) {
+          console.error(`Failed to call Meta API for campaign broadcast on ${user.phone}:`, metaErr);
+        }
+      }
+
+      // Print info to next.js backend logs (Simulated console view)
       console.log(`\n==================================================`);
       console.log(`🟢 [META WHATSAPP BUSINESS API CALLED]`);
       console.log(`To: ${user.phone}`);
