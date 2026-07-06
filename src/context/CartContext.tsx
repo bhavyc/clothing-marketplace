@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export interface SelectedOption {
   id: string;
@@ -62,6 +63,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   // Load cart and coupon from localStorage on mount
   useEffect(() => {
@@ -86,12 +88,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsMounted(true);
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Sync local cart to db on login, or load db cart if local is empty
+  useEffect(() => {
+    if (isMounted && status === "authenticated") {
+      const loadOrSyncCart = async () => {
+        try {
+          const res = await fetch("/api/cart");
+          if (res.ok) {
+            const data = await res.json();
+            if (data.items && data.items.length > 0) {
+              setItems(data.items);
+            } else if (items.length > 0) {
+              await fetch("/api/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ items }),
+              });
+            }
+          }
+        } catch (e) {
+          console.error("Error loading/syncing cart on auth status change:", e);
+        }
+      };
+      loadOrSyncCart();
+    }
+  }, [status, isMounted]);
+
+  // Save cart to localStorage whenever it changes, and sync to DB if authenticated
   useEffect(() => {
     if (isMounted) {
       localStorage.setItem("boutique_cart", JSON.stringify(items));
+
+      if (status === "authenticated") {
+        const syncCart = async () => {
+          try {
+            await fetch("/api/cart", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ items }),
+            });
+          } catch (e) {
+            console.error("Failed to sync cart changes to db:", e);
+          }
+        };
+        syncCart();
+      }
     }
-  }, [items, isMounted]);
+  }, [items, status, isMounted]);
 
   // Save coupon to localStorage whenever it changes
   useEffect(() => {

@@ -63,9 +63,11 @@ export async function POST(
         some: {},
       };
     } else if (campaign.segmentTag === "ABANDONED_CART") {
-      // Abandoned Carts: Opted-in users who have logged in/registered but have placed 0 orders
-      segmentFilter.orders = {
-        none: {},
+      // Abandoned Carts: Opted-in users who currently have items in their cart
+      segmentFilter.cart = {
+        items: {
+          some: {},
+        },
       };
     }
 
