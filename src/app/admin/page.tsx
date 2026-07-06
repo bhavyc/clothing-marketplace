@@ -58,7 +58,7 @@ export default function AdminDashboard() {
   const [campaignBannerUrl, setCampaignBannerUrl] = useState("");
   const [campaignCaptionText, setCampaignCaptionText] = useState("");
   const [campaignCouponCode, setCampaignCouponCode] = useState("");
-  const [campaignSegmentTag, setCampaignSegmentTag] = useState("ALL");
+  const [campaignSegmentTag, setCampaignSegmentTag] = useState("ABANDONED_CART");
 
   // Orders State
   const [orders, setOrders] = useState<any[]>([]);
@@ -2211,14 +2211,12 @@ export default function AdminDashboard() {
                         <label className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
                           Target Segment
                         </label>
-                        <select
+                         <select
                           value={campaignSegmentTag}
                           onChange={(e) => setCampaignSegmentTag(e.target.value)}
-                          className="mt-1 block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none"
+                          className="mt-1 block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none cursor-pointer"
                         >
-                          <option value="ALL">Opted-in Users (All)</option>
-                          <option value="VIP">VIP Customers Only</option>
-                          <option value="ABANDONED_CART">Abandoned Carts</option>
+                          <option value="ABANDONED_CART">Abandoned Carts (Users with items in cart)</option>
                         </select>
                       </div>
                     </div>
