@@ -2111,16 +2111,67 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                        Approved Banner / Image URL
+                        Campaign Banner Image
                       </label>
-                      <input
-                        type="url"
-                        placeholder="https://images.unsplash.com/..."
-                        value={campaignBannerUrl}
-                        onChange={(e) => setCampaignBannerUrl(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none"
-                        required
-                      />
+                      <div className="mt-1 flex flex-col gap-2">
+                        {/* Upload button */}
+                        <label className="flex items-center gap-2 cursor-pointer rounded-md border border-dashed border-[#C4A76C] bg-[#FAF6EE] py-3 px-4 hover:bg-[#F0E8D4] transition-colors">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4A76C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                          <span className="text-xs font-sans text-brand-charcoal">
+                            {campaignBannerUrl ? "Change Image" : "Upload Banner Image"}
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const formData = new FormData();
+                              formData.append("file", file);
+                              try {
+                                setCampaignBannerUrl("uploading...");
+                                const res = await fetch("/api/admin/upload", {
+                                  method: "POST",
+                                  body: formData,
+                                });
+                                const data = await res.json();
+                                if (data.url) {
+                                  setCampaignBannerUrl(data.url);
+                                } else {
+                                  alert("Upload failed: " + (data.error || "Unknown error"));
+                                  setCampaignBannerUrl("");
+                                }
+                              } catch (err) {
+                                alert("Upload error. Please try again.");
+                                setCampaignBannerUrl("");
+                              }
+                            }}
+                          />
+                        </label>
+                        {/* Preview */}
+                        {campaignBannerUrl && campaignBannerUrl !== "uploading..." && (
+                          <div className="relative rounded-md overflow-hidden border border-[#E8DFC8]">
+                            <img src={campaignBannerUrl} alt="Banner preview" className="w-full h-32 object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => setCampaignBannerUrl("")}
+                              className="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                            >×</button>
+                          </div>
+                        )}
+                        {campaignBannerUrl === "uploading..." && (
+                          <p className="text-[10px] text-[#C4A76C] font-sans animate-pulse">Uploading image to cloud...</p>
+                        )}
+                        {/* Fallback: paste URL manually */}
+                        <input
+                          type="url"
+                          placeholder="Or paste image URL directly..."
+                          value={campaignBannerUrl === "uploading..." ? "" : campaignBannerUrl}
+                          onChange={(e) => setCampaignBannerUrl(e.target.value)}
+                          className="block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none"
+                        />
+                      </div>
                     </div>
 
                     <div>
