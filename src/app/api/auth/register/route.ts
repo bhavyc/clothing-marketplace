@@ -50,7 +50,7 @@ export async function POST(req: Request) {
             userId: user.id,
             shopName,
             description: shopDescription || "",
-            isApproved: false,
+            isApproved: true,
           },
         });
       }

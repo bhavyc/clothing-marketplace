@@ -108,14 +108,25 @@ export async function POST(req: NextRequest) {
     // 3. Insert new items
     if (items && Array.isArray(items)) {
       for (const item of items) {
-        await prisma.cartItem.create({
-          data: {
-            cartId: cart.id,
-            variantId: item.variantId,
-            quantity: item.quantity,
-            selectedOptions: JSON.stringify(item.selectedOptions || []),
-          },
+        if (!item.variantId) continue;
+        
+        // Verify variantId exists in DB before adding to avoid ForeignKeyConstraintViolation
+        const variantExists = await prisma.productVariant.findUnique({
+          where: { id: item.variantId },
         });
+
+        if (variantExists) {
+          await prisma.cartItem.create({
+            data: {
+              cartId: cart.id,
+              variantId: item.variantId,
+              quantity: item.quantity,
+              selectedOptions: JSON.stringify(item.selectedOptions || []),
+            },
+          });
+        } else {
+          console.warn(`Skipped syncing cart item because variantId "${item.variantId}" does not exist in DB.`);
+        }
       }
     }
 

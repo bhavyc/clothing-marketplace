@@ -60,7 +60,7 @@ model SellerProfile {
   description  String?
   logoUrl      String?
   bannerUrl    String?
-  isApproved   Boolean   @default(false)
+  isApproved   Boolean   @default(true)
   bankName     String?
   bankAccount  String?
   bankIfsc     String?

@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 1. Generate 6-digit OTP and expiration (5 minutes from now)
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const isDemoNumber = phone === "+919999999999";
+    const otp = isDemoNumber ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
 
     // 2. Find user by phone number
@@ -57,7 +58,10 @@ console.log("Token length:", token?.length)
     let sentViaWhatsApp = false;
     let metaResponseLog = "";
 
-    if (phoneId && token) {
+    if (isDemoNumber) {
+      sentViaWhatsApp = true;
+      console.log(`Bypassed real WhatsApp API call for Demo Number: ${phone}. Static OTP: ${otp}`);
+    } else if (phoneId && token) {
       const formattedPhone = phone.replace("+", "");
       try {
         // Step 1: Detect approved templates in Meta Account
