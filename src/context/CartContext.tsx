@@ -54,6 +54,7 @@ interface CartContextType {
   isMounted: boolean;
   isCartOpen: boolean;
   setIsCartOpen: (open: boolean) => void;
+  refreshCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -203,6 +204,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setAppliedCoupon(null);
   }, []);
 
+  const refreshCart = React.useCallback(async () => {
+    if (status === "authenticated") {
+      try {
+        const res = await fetch("/api/cart");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.items) {
+            setItems(data.items);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to refresh cart from server:", e);
+      }
+    }
+  }, [status]);
+
+
   // Helper values
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = items.reduce(
@@ -293,6 +311,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     isMounted,
     isCartOpen,
     setIsCartOpen,
+    refreshCart,
   }), [
     items,
     addItem,
@@ -309,6 +328,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     isMounted,
     isCartOpen,
     setIsCartOpen,
+    refreshCart,
   ]);
 
   return (

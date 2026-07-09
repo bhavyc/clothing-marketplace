@@ -55,6 +55,35 @@ export async function POST(req: NextRequest) {
           data: { stock: { increment: item.quantity } },
         });
       }
+
+      // Refund wallet paid balance
+      if (order.walletPaid > 0 && order.userId) {
+        await tx.user.update({
+          where: { id: order.userId },
+          data: { walletBalance: { increment: order.walletPaid } },
+        });
+      }
+
+      // Restore coupon
+      if (order.couponUsed && order.userId) {
+        const coupon = await tx.coupon.findUnique({
+          where: { code: order.couponUsed },
+        });
+        if (coupon) {
+          await tx.coupon.update({
+            where: { id: coupon.id },
+            data: { currentUsage: { decrement: 1 } },
+          });
+          await tx.couponSent.updateMany({
+            where: {
+              userId: order.userId,
+              couponId: coupon.id,
+              used: true,
+            },
+            data: { used: false },
+          });
+        }
+      }
     });
 
     return NextResponse.json({

@@ -24,8 +24,6 @@ export default function Header() {
   const { cartCount, isMounted, isCartOpen, setIsCartOpen } = useCart();
   const [walletBalance, setWalletBalance] = useState<number>(0);
 
-  const activeMode = searchParams.get("mode") === "INDI" ? "INDI" : "LUXE";
-
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -38,7 +36,7 @@ export default function Header() {
   useEffect(() => {
     const fetchNavigation = async () => {
       try {
-        const res = await fetch(`/api/navigation?mode=${activeMode}`);
+        const res = await fetch("/api/navigation");
         const data = await res.json();
         if (res.ok) {
           setCategories(data.categories || []);
@@ -49,7 +47,7 @@ export default function Header() {
       }
     };
     fetchNavigation();
-  }, [activeMode]);
+  }, []);
 
   useEffect(() => {
     if (status === "authenticated" && session?.user?.role === "CUSTOMER") {
@@ -68,20 +66,10 @@ export default function Header() {
     }
   }, [status, session]);
 
-  const handleModeSwitch = (mode: "LUXE" | "INDI") => {
-    if (pathname.startsWith("/shop/")) {
-      router.push(`/shop?mode=${mode}`);
-    } else if (pathname === "/shop") {
-      router.push(`/shop?mode=${mode}`);
-    } else {
-      router.push(`${pathname}?mode=${mode}`);
-    }
-  };
-
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}&mode=${activeMode}`);
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
       setSearchQuery("");
     }
@@ -106,40 +94,14 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Left: Brand Switcher Toggle (Desktop Only) */}
-            <div className="relative z-20 hidden md:flex items-center">
-              <div className="flex items-center space-x-1 border border-[#E8DFC8] rounded-full p-0.5 bg-[#FAF6F0]">
-                <button
-                  onClick={() => handleModeSwitch("LUXE")}
-                  className={`flex items-center px-3.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all cursor-pointer ${
-                    activeMode === "LUXE"
-                      ? "bg-brand-charcoal text-white shadow-xs"
-                      : "text-gray-400 hover:text-brand-charcoal"
-                  }`}
-                >
-                  ✨ Luxe
-                </button>
-                <button
-                  onClick={() => handleModeSwitch("INDI")}
-                  className={`flex items-center px-3.5 py-1 text-[9px] font-bold uppercase tracking-widest rounded-full transition-all cursor-pointer ${
-                    activeMode === "INDI"
-                      ? "bg-brand-gold text-white shadow-xs"
-                      : "text-gray-400 hover:text-brand-charcoal"
-                  }`}
-                >
-                  ✥ Indi
-                </button>
-              </div>
-            </div>
+            {/* Left Balance Spacer */}
+            <div className="hidden md:block z-20 w-32" />
 
             {/* Center: Brand Logo (Always Centered) - Pointer events disabled on container, enabled on text to avoid overlay click blocking */}
             <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center pointer-events-none z-10">
-              <Link href={`/?mode=${activeMode}`} className="pointer-events-auto font-serif text-[15px] md:text-3xl font-semibold tracking-wider md:tracking-widest text-brand-charcoal lowercase flex flex-col md:flex-row items-center md:items-baseline gap-0.5 md:gap-2 whitespace-nowrap">
+              <Link href="/" className="pointer-events-auto font-serif text-[15px] md:text-3xl font-semibold tracking-wider md:tracking-widest text-brand-charcoal lowercase flex flex-col md:flex-row items-center md:items-baseline gap-0.5 md:gap-2 whitespace-nowrap">
                 <span className="flex items-baseline gap-1 md:gap-2">
                   vamika <span className="font-serif italic text-brand-gold font-normal">&</span> bhargavi
-                </span>
-                <span className="text-[8px] md:text-[9px] font-sans uppercase font-bold tracking-widest text-brand-gold leading-none md:leading-normal">
-                  {activeMode === "LUXE" ? "luxe" : "indi"}
                 </span>
               </Link>
             </div>
@@ -247,7 +209,7 @@ export default function Header() {
           {/* Bottom Row: Navigation Links (Desktop Only) */}
           <nav className="hidden md:flex items-center justify-center space-x-10 text-[10px] font-sans tracking-[0.25em] text-brand-charcoal uppercase border-t border-[#FAF5EC]/60 py-3.5">
             <Link 
-              href={`/?mode=${activeMode}`} 
+              href="/" 
               className="relative py-1 hover:text-brand-gold transition-all duration-300 font-bold group"
             >
               Home
@@ -255,7 +217,7 @@ export default function Header() {
             </Link>
             
             <Link 
-              href={`/about?mode=${activeMode}`} 
+              href="/about" 
               className="relative py-1 hover:text-brand-gold transition-all duration-300 font-bold group"
             >
               About Us
@@ -265,7 +227,7 @@ export default function Header() {
             {/* Shop Dropdown */}
             <div className="relative group">
               <Link
-                href={`/shop?mode=${activeMode}`}
+                href="/shop"
                 className="flex items-center relative py-1 hover:text-brand-gold transition-all duration-300 font-bold cursor-pointer"
               >
                 Shop <ChevronDown className="h-3.5 w-3.5 ml-0.5 text-[#A59578] group-hover:rotate-180 transition-transform duration-300" />
@@ -279,7 +241,7 @@ export default function Header() {
                     categories.map((cat) => (
                       <Link
                         key={cat}
-                        href={`/shop?category=${encodeURIComponent(cat)}&mode=${activeMode}`}
+                        href={`/shop?category=${encodeURIComponent(cat)}`}
                         className="block px-4 py-2.5 text-[10px] font-sans text-brand-charcoal hover:bg-[#FAF6F0] hover:text-brand-gold transition-colors uppercase tracking-widest font-bold"
                       >
                         {cat}
@@ -304,7 +266,7 @@ export default function Header() {
                     collections.map((col) => (
                       <Link
                         key={col}
-                        href={`/shop?collection=${encodeURIComponent(col)}&mode=${activeMode}`}
+                        href={`/shop?collection=${encodeURIComponent(col)}`}
                         className="block px-4 py-2.5 text-[10px] font-sans text-brand-charcoal hover:bg-[#FAF6F0] hover:text-brand-gold transition-colors uppercase tracking-widest font-bold"
                       >
                         {col}
@@ -316,7 +278,7 @@ export default function Header() {
             </div>
 
             <Link 
-              href={`/shop?collection=Bestsellers&mode=${activeMode}`} 
+              href="/shop?collection=Bestsellers" 
               className="relative py-1 hover:text-brand-gold transition-all duration-300 font-bold group"
             >
               Bestsellers
@@ -354,52 +316,22 @@ export default function Header() {
       {/* Mobile Navigation Drawer - constrained height & scrollable to avoid overflow cutoff on small screens */}
       {isMobileMenuOpen && (
         <div className="md:hidden bg-[#FDFBF7] border-t border-[#FAF5EC] py-4 px-4 space-y-3 shadow-inner max-h-[calc(100vh-4.5rem)] overflow-y-auto">
-          {/* Brand Switcher Toggle in Mobile Menu */}
-          <div className="flex items-center justify-center space-x-1 border border-[#E8DFC8] rounded-full p-0.5 bg-[#FAF6F0] mb-4">
-            <button
-              onClick={() => {
-                handleModeSwitch("LUXE");
-                setIsMobileMenuOpen(false);
-              }}
-              className={`flex-1 flex items-center justify-center py-1.5 text-[10px] font-bold tracking-widest rounded-full transition-all cursor-pointer ${
-                activeMode === "LUXE"
-                  ? "bg-brand-charcoal text-white shadow-xs"
-                  : "text-gray-400 hover:text-brand-charcoal"
-              }`}
-            >
-              ✨ Luxe
-            </button>
-            <button
-              onClick={() => {
-                handleModeSwitch("INDI");
-                setIsMobileMenuOpen(false);
-              }}
-              className={`flex-1 flex items-center justify-center py-1.5 text-[10px] font-bold tracking-widest rounded-full transition-all cursor-pointer ${
-                activeMode === "INDI"
-                  ? "bg-brand-gold text-white shadow-xs"
-                  : "text-gray-400 hover:text-brand-charcoal"
-              }`}
-            >
-              ✥ Indi
-            </button>
-          </div>
-
           <Link
-            href={`/?mode=${activeMode}`}
+            href="/"
             onClick={() => setIsMobileMenuOpen(false)}
             className="block font-sans text-sm uppercase tracking-wider text-brand-charcoal hover:text-brand-gold py-1"
           >
             Home
           </Link>
           <Link
-            href={`/about?mode=${activeMode}`}
+            href="/about"
             onClick={() => setIsMobileMenuOpen(false)}
             className="block font-sans text-sm uppercase tracking-wider text-brand-charcoal hover:text-brand-gold py-1"
           >
             About Us
           </Link>
           <Link
-            href={`/shop?mode=${activeMode}`}
+            href="/shop"
             onClick={() => setIsMobileMenuOpen(false)}
             className="block font-sans text-sm uppercase tracking-wider text-brand-charcoal hover:text-brand-gold py-1 font-bold"
           >
@@ -411,7 +343,7 @@ export default function Header() {
               {categories.map((cat) => (
                 <Link
                   key={cat}
-                  href={`/shop?category=${encodeURIComponent(cat)}&mode=${activeMode}`}
+                  href={`/shop?category=${encodeURIComponent(cat)}`}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="block text-xs uppercase tracking-wider text-gray-500 hover:text-brand-gold"
                 >
@@ -422,7 +354,7 @@ export default function Header() {
           )}
 
           <Link
-            href={`/shop?collection=Bestsellers&mode=${activeMode}`}
+            href="/shop?collection=Bestsellers"
             onClick={() => setIsMobileMenuOpen(false)}
             className="block font-sans text-sm uppercase tracking-wider text-brand-charcoal hover:text-brand-gold py-1"
           >

@@ -3,20 +3,13 @@ import { ArrowRight, Sparkles, Heart, Shield, Compass } from "lucide-react";
 
 export const revalidate = 0; // Fresh render
 
-export default async function AboutPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ mode?: string }>;
-}) {
-  const params = await searchParams;
-  const mode = params.mode === "INDI" ? "INDI" : "LUXE";
-
+export default async function AboutPage() {
   return (
     <div className="bg-brand-cream-dark min-h-screen">
       {/* Hero Section */}
       <section className="py-14 sm:py-24 px-4 text-center max-w-4xl mx-auto space-y-6">
         <p className="text-xs uppercase tracking-[0.25em] font-sans font-bold text-brand-gold animate-pulse">
-          {mode === "LUXE" ? "A Legacy of Luxury" : "Handcrafted Slow Fashion"}
+          A Legacy of Luxury & Slow Fashion
         </p>
         <h1 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-brand-charcoal font-semibold lowercase tracking-tight leading-none">
           the story of <span className="font-normal italic text-brand-gold">vamika & bhargavi</span>
@@ -50,14 +43,14 @@ export default async function AboutPage({
               Founded by two sisters with a shared passion for Indian weaves and custom tailoring, Vamika & Bhargavi is a love letter to the country's rich textile heritage. What started as a small design studio tailoring custom outfits for close clients has blossomed into a premium fashion house.
             </p>
             <p className="font-sans text-sm text-gray-600 leading-relaxed">
-              We curate two distinct worlds for our patrons. Our <strong className="text-brand-gold">Luxe</strong> tier showcases high-end, hand-embroidered velvet pheran sets, pure raw silks, and festive couture. Our <strong className="text-brand-gold">Indi</strong> line celebrates easy elegance, featuring breathable organic linens, artisanal tunics, and minimalist silhouettes suited for daily comfort.
+              We curate exquisite collections for our patrons. From high-end, hand-embroidered velvet pheran sets, pure raw silks, and festive couture, to artisanal tunics and minimalist silhouettes suited for daily comfort in breathable organic linens.
             </p>
             <p className="font-sans text-sm text-gray-600 leading-relaxed font-medium italic">
               "We believe clothing should not just be worn; it should be felt. Every thread, every stitch of Aari embroidery is a testament to the artisan's soul."
             </p>
             <div className="pt-4">
               <Link
-                href={`/shop?mode=${mode}`}
+                href="/shop"
                 className="inline-flex items-center text-xs font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-1 hover:border-brand-gold"
               >
                 Browse Our Collections
@@ -175,10 +168,10 @@ export default async function AboutPage({
         </p>
         <div className="pt-4">
           <Link
-            href={`/shop?mode=${mode}`}
+            href="/shop"
             className="inline-block bg-brand-gold hover:bg-brand-gold-light text-white text-xs font-sans font-bold uppercase tracking-widest py-4 px-8 rounded-sm shadow-md transition-all duration-300 hover:-translate-y-0.5"
           >
-            {mode === "LUXE" ? "Shop Luxe Collection" : "Shop Indi Collection"}
+            Shop The Catalog
           </Link>
         </div>
       </section>

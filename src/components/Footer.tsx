@@ -1,13 +1,10 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { X, Mail, Phone, Clock } from "lucide-react";
 
 export default function Footer() {
-  const searchParams = useSearchParams();
-  const activeMode = searchParams.get("mode") === "INDI" ? "INDI" : "LUXE";
   const [activeModal, setActiveModal] = useState<"care" | "shipping" | "tailoring" | null>(null);
 
   return (
@@ -29,7 +26,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Collections Column */}
         <div className="space-y-4 text-left">
           <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
             Collections
@@ -37,23 +33,7 @@ export default function Footer() {
           <ul className="space-y-2.5 font-sans text-xs">
             <li>
               <Link 
-                href={`/shop?collection=Luxe+Festive&mode=LUXE`} 
-                className="text-stone-600 hover:text-brand-gold transition-colors block"
-              >
-                Luxe Festive
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href={`/shop?collection=Indi+Casuals&mode=INDI`} 
-                className="text-stone-600 hover:text-brand-gold transition-colors block"
-              >
-                Indi Casuals
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href={`/shop?collection=Bestsellers&mode=${activeMode}`} 
+                href="/shop?collection=Bestsellers" 
                 className="text-stone-600 hover:text-brand-gold transition-colors block"
               >
                 Bestsellers Shelf
@@ -61,7 +41,7 @@ export default function Footer() {
             </li>
             <li>
               <Link 
-                href={`/shop?mode=${activeMode}`} 
+                href="/shop" 
                 className="text-stone-600 hover:text-brand-gold transition-colors block"
               >
                 Explore All
@@ -78,7 +58,7 @@ export default function Footer() {
           <ul className="space-y-2.5 font-sans text-xs">
             <li>
               <Link 
-                href={`/about?mode=${activeMode}`} 
+                href="/about" 
                 className="text-stone-600 hover:text-brand-gold transition-colors block"
               >
                 Our Story

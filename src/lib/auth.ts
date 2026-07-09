@@ -2,6 +2,9 @@ import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { NextRequest } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { decode } from "next-auth/jwt";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -87,3 +90,37 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET || "boutique-secret-key-1234567890",
 };
+
+export async function getUserSession(req: NextRequest) {
+  // 1. Try browser session first
+  const session = await getServerSession(authOptions);
+  if (session?.user) {
+    return session;
+  }
+
+  // 2. Try Bearer token in header
+  const authHeader = req.headers.get("authorization");
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    try {
+      const payloadString = Buffer.from(token, "base64").toString("utf-8");
+      const decoded = JSON.parse(payloadString);
+      if (decoded && decoded.id && decoded.expires > Date.now()) {
+        return {
+          user: {
+            id: decoded.id,
+            email: decoded.email,
+            name: decoded.name,
+            role: decoded.role,
+            phone: decoded.phone,
+            sellerProfileId: decoded.sellerProfileId,
+          }
+        };
+      }
+    } catch (e) {
+      console.error("Custom token decoding failed:", e);
+    }
+  }
+
+  return null;
+}

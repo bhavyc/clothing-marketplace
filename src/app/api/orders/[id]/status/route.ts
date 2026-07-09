@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { sendShippingConfirmationEmail } from "@/lib/email";
 
 export async function POST(
   req: NextRequest,
@@ -111,6 +112,13 @@ export async function POST(
       where: { id: orderId },
       data: updatedData,
     });
+
+    // Send shipping confirmation email if the status has transitioned to SHIPPED
+    if (status === "SHIPPED") {
+      sendShippingConfirmationEmail(orderId).catch((e) =>
+        console.error("Failed to send shipping confirmation email in status update route:", e)
+      );
+    }
 
     return NextResponse.json({
       success: true,

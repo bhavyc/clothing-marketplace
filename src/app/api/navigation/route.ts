@@ -6,13 +6,8 @@ export const revalidate = 0; // Fetch fresh navigation links
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const mode = searchParams.get("mode") === "INDI" ? "INDI" : "LUXE";
-
-    // Retrieve unique categories and collections associated with the selected tier
+    // Retrieve unique categories and collections associated with all products
     const products = await prisma.product.findMany({
-      where: {
-        tier: mode,
-      },
       select: {
         category: true,
         collection: true,

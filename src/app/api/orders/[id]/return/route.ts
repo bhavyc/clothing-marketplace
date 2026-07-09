@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getUserSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export async function POST(
@@ -9,7 +8,7 @@ export async function POST(
 ) {
   try {
     const { id: orderId } = await params;
-    const session = await getServerSession(authOptions);
+    const session = await getUserSession(req);
 
     // 1. Authenticate user
     if (!session?.user) {

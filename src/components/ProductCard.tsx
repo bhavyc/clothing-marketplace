@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 export interface ProductCardProps {
   product: {
@@ -13,6 +12,7 @@ export interface ProductCardProps {
     category: string;
     collection: string | null;
     isBestseller: boolean;
+    discountPercent?: number;
     seller: {
       shopName: string;
     };
@@ -25,8 +25,6 @@ export interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [hovered, setHovered] = useState(false);
-  const searchParams = useSearchParams();
-  const mode = searchParams.get("mode") === "INDI" ? "INDI" : "LUXE";
 
   // Parse images JSON safely
   let imageList: string[] = ["/placeholder.jpg"];
@@ -46,6 +44,11 @@ export default function ProductCard({ product }: ProductCardProps) {
   const prices = product.variants.map((v) => v.price);
   const startingPrice = prices.length > 0 ? Math.min(...prices) : 0;
   
+  const discountPercent = product.discountPercent || 0;
+  const discountedPrice = discountPercent > 0
+    ? startingPrice * (1 - discountPercent / 100)
+    : startingPrice;
+  
   // Check if out of stock completely
   const totalStock = product.variants.reduce((acc, v) => acc + v.stock, 0);
   const isOutOfStock = totalStock === 0;
@@ -56,7 +59,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="group relative flex flex-col bg-transparent">
       {/* Product Image Wrapper */}
-      <Link href={`/shop/${product.id}?mode=${mode}`} className="block">
+      <Link href={`/shop/${product.id}`} className="block">
         <div
           className="relative w-full aspect-[3/4] border border-[#E8DFC8] group-hover:border-brand-gold/50 rounded-md overflow-hidden bg-brand-cream-dark shadow-2xs group-hover:shadow-md transition-all duration-500 ease-out"
           onMouseEnter={() => setHovered(true)}
@@ -76,6 +79,11 @@ export default function ProductCard({ product }: ProductCardProps) {
                 {product.isBestseller && (
                   <span className="bg-brand-gold text-[#FAF6F0] text-[9px] uppercase tracking-widest font-sans font-bold px-2.5 py-1 rounded-sm shadow-sm">
                     Bestseller
+                  </span>
+                )}
+                {discountPercent > 0 && (
+                  <span className="bg-red-650 text-[#FAF6F0] text-[9px] uppercase tracking-widest font-sans font-bold px-2.5 py-1 rounded-sm shadow-sm animate-pulse">
+                    {discountPercent}% OFF
                   </span>
                 )}
               </>
@@ -100,16 +108,23 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
         </div>
 
-        <Link href={`/shop/${product.id}?mode=${mode}`} className="mt-1">
+        <Link href={`/shop/${product.id}`} className="mt-1">
           <h3 className="font-serif text-base font-medium text-brand-charcoal hover:text-brand-gold transition-colors duration-200 line-clamp-1">
             {product.title}
           </h3>
         </Link>
 
-        <p className="mt-1.5 font-sans text-sm font-semibold text-brand-charcoal">
-          {prices.length > 1 ? "From " : ""}
-          Rs. {startingPrice.toLocaleString("en-IN")}
-        </p>
+        <div className="mt-1.5 font-sans text-sm font-semibold text-brand-charcoal flex items-center gap-2">
+          <span>
+            {prices.length > 1 ? "From " : ""}
+            Rs. {discountedPrice.toLocaleString("en-IN")}
+          </span>
+          {discountPercent > 0 && (
+            <span className="text-xs text-gray-400 line-through font-normal">
+              Rs. {startingPrice.toLocaleString("en-IN")}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

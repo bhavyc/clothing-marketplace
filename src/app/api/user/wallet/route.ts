@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getUserSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUserSession(req);
 
     if (!session || !session.user) {
       return NextResponse.json(
@@ -18,12 +17,26 @@ export async function GET(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { walletBalance: true },
+      select: { 
+        id: true,
+        email: true,
+        name: true,
+        phone: true,
+        role: true,
+        walletBalance: true 
+      },
     });
 
     return NextResponse.json({
       success: true,
       walletBalance: user?.walletBalance || 0,
+      user: {
+        id: user?.id,
+        email: user?.email,
+        name: user?.name,
+        phone: user?.phone,
+        role: user?.role,
+      }
     });
   } catch (error: any) {
     console.error("Wallet balance retrieval error:", error);

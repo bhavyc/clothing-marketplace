@@ -62,6 +62,70 @@ export async function POST(req: NextRequest) {
       } else {
         console.warn(`Order not found for Razorpay Order ID: ${razorpayOrderId}`);
       }
+    } else if (event === "payment.failed") {
+      const paymentEntity = payload.payload?.payment?.entity;
+      const razorpayOrderId = paymentEntity?.order_id;
+
+      if (razorpayOrderId) {
+        const order = await prisma.order.findFirst({
+          where: {
+            paymentId: razorpayOrderId,
+            paymentStatus: { not: "PAID" },
+            status: { not: "CANCELLED" },
+          },
+          include: { items: true },
+        });
+
+        if (order) {
+          console.log(`Webhook updating failed order ${order.orderNumber} to FAILED/CANCELLED.`);
+          await prisma.$transaction(async (tx) => {
+            await tx.order.update({
+              where: { id: order.id },
+              data: {
+                paymentStatus: "FAILED",
+                status: "CANCELLED",
+              },
+            });
+
+            // Restore stocks
+            for (const item of order.items) {
+              await tx.productVariant.update({
+                where: { id: item.variantId },
+                data: { stock: { increment: item.quantity } },
+              });
+            }
+
+            // Refund wallet
+            if (order.walletPaid > 0 && order.userId) {
+              await tx.user.update({
+                where: { id: order.userId },
+                data: { walletBalance: { increment: order.walletPaid } },
+              });
+            }
+
+            // Restore coupon
+            if (order.couponUsed && order.userId) {
+              const coupon = await tx.coupon.findUnique({
+                where: { code: order.couponUsed },
+              });
+              if (coupon) {
+                await tx.coupon.update({
+                  where: { id: coupon.id },
+                  data: { currentUsage: { decrement: 1 } },
+                });
+                await tx.couponSent.updateMany({
+                  where: {
+                    userId: order.userId,
+                    couponId: coupon.id,
+                    used: true,
+                  },
+                  data: { used: false },
+                });
+              }
+            }
+          });
+        }
+      }
     }
 
     return NextResponse.json({ success: true });

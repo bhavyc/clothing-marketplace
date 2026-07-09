@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyRazorpaySignature } from "@/lib/razorpay";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -59,6 +60,35 @@ export async function POST(req: NextRequest) {
             data: { stock: { increment: item.quantity } },
           });
         }
+
+        // Refund wallet paid balance
+        if (order.walletPaid > 0 && order.userId) {
+          await tx.user.update({
+            where: { id: order.userId },
+            data: { walletBalance: { increment: order.walletPaid } },
+          });
+        }
+
+        // Restore coupon
+        if (order.couponUsed && order.userId) {
+          const coupon = await tx.coupon.findUnique({
+            where: { code: order.couponUsed },
+          });
+          if (coupon) {
+            await tx.coupon.update({
+              where: { id: coupon.id },
+              data: { currentUsage: { decrement: 1 } },
+            });
+            await tx.couponSent.updateMany({
+              where: {
+                userId: order.userId,
+                couponId: coupon.id,
+                used: true,
+              },
+              data: { used: false },
+            });
+          }
+        }
       });
 
       return NextResponse.json(
@@ -75,6 +105,11 @@ export async function POST(req: NextRequest) {
         paymentId: razorpayPaymentId, // Store actual transaction ID now
       },
     });
+
+    // Send confirmation email in background
+    sendOrderConfirmationEmail(order.orderNumber).catch((e) =>
+      console.error("Failed to send order confirmation email after payment verification:", e)
+    );
 
     return NextResponse.json({
       success: true,

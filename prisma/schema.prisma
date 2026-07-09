@@ -85,6 +85,7 @@ model Product {
   pantLength      String?
   sleeveLength    String?
   isBestseller    Boolean          @default(false) // Manual override by Admin
+  discountPercent Float            @default(0.0)
   sizeChartType   String           @default("STANDARD") // "STANDARD", "IMAGE", "CUSTOM"
   sizeChartData   String?          // Image URL if sizeChartType is "IMAGE", JSON measurements if "CUSTOM"
   sellerId        String

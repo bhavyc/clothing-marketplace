@@ -78,8 +78,8 @@ export function verifyRazorpaySignature(
   razorpayPaymentId: string,
   razorpaySignature: string
 ): boolean {
-  if (isMockMode()) {
-    // In mock mode, allow payment validation if the signature matches a mock prefix
+  if (isMockMode() || process.env.NODE_ENV !== "production") {
+    // In mock/dev mode, allow payment validation if the signature matches a mock prefix
     return (
       razorpaySignature === `mock_sig_${razorpayOrderId}_${razorpayPaymentId}` ||
       razorpaySignature.startsWith("mock_sig_")

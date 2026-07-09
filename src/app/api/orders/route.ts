@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { getUserSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { createRazorpayOrder } from "@/lib/razorpay";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUserSession(req);
 
     if (!session || !session.user) {
       return NextResponse.json(
@@ -91,7 +91,12 @@ export async function POST(req: NextRequest) {
           console.error("Failed to parse options during order placement:", e);
         }
 
-        const calculatedUnitPrice = variant.price + optionAdjustment;
+        const discountPercent = variant.product.discountPercent || 0;
+        const discountedBasePrice = discountPercent > 0 
+          ? variant.price * (1 - discountPercent / 100) 
+          : variant.price;
+
+        const calculatedUnitPrice = discountedBasePrice + optionAdjustment;
         const itemTotal = calculatedUnitPrice * item.quantity;
         subtotal += itemTotal;
 
@@ -261,6 +266,25 @@ export async function POST(req: NextRequest) {
                 data: { walletBalance: { increment: order.walletPaid } },
               });
             }
+            if (order.couponUsed) {
+              const coupon = await tx.coupon.findUnique({
+                where: { code: order.couponUsed },
+              });
+              if (coupon) {
+                await tx.coupon.update({
+                  where: { id: coupon.id },
+                  data: { currentUsage: { decrement: 1 } },
+                });
+                await tx.couponSent.updateMany({
+                  where: {
+                    userId: order.userId as string,
+                    couponId: coupon.id,
+                    used: true,
+                  },
+                  data: { used: false },
+                });
+              }
+            }
             await tx.order.delete({
               where: { id: order.id },
             });
@@ -295,6 +319,11 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // Send confirmation email in background
+      sendOrderConfirmationEmail(result.orderNumber).catch((e) =>
+        console.error("Failed to send order confirmation email for wallet order:", e)
+      );
+
       return NextResponse.json({
         success: true,
         orderNumber: result.orderNumber,
@@ -313,7 +342,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUserSession(req);
 
     if (!session || !session.user) {
       return NextResponse.json(

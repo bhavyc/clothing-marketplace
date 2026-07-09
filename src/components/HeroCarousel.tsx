@@ -14,22 +14,18 @@ interface SlideItem {
   buttonText: string;
 }
 
-interface HeroCarouselProps {
-  mode: "LUXE" | "INDI";
-}
-
-export default function HeroCarousel({ mode }: HeroCarouselProps) {
+export default function HeroCarousel() {
   const [activeSlide, setActiveSlide] = useState(0);
 
-  const luxeSlides: SlideItem[] = [
+  const slides: SlideItem[] = [
     {
-      subtitle: "vamika & bhargavi luxe",
+      subtitle: "vamika & bhargavi",
       title1: "exquisite luxury",
       title2: "couture.",
       description: "Discover premium hand-crafted ensembles, high-end design aesthetics, and heritage apparel curated for modern elegance.",
       image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80",
-      link: `/shop?mode=LUXE`,
-      buttonText: "Explore Luxe Collection",
+      link: "/shop",
+      buttonText: "Explore Collection",
     },
     {
       subtitle: "custom styling services",
@@ -37,51 +33,19 @@ export default function HeroCarousel({ mode }: HeroCarouselProps) {
       title2: "perfection.",
       description: "Enjoy complimentary size customisation and custom fit adjustments directly with our boutique designers.",
       image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=700&q=80",
-      link: `/shop?mode=LUXE`,
+      link: "/shop",
       buttonText: "Shop Tailored Fits",
     },
     {
-      subtitle: "vamika & bhargavi indi",
-      title1: "minimalist daily",
-      title2: "wear.",
-      description: "Discover lightweight daily-wear collections, comfortable coord outfits, and breathable silhouettes in our Indi range.",
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=80",
-      link: `/?mode=INDI`,
-      buttonText: "Explore Indi Collection",
-    },
-  ];
-
-  const indiSlides: SlideItem[] = [
-    {
-      subtitle: "vamika & bhargavi indi",
+      subtitle: "vamika & bhargavi",
       title1: "minimalist daily",
       title2: "wear.",
       description: "Discover lightweight daily-wear collections, comfortable coord outfits, and breathable silhouettes.",
       image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=80",
-      link: `/shop?mode=INDI`,
-      buttonText: "Explore Indi Collection",
-    },
-    {
-      subtitle: "custom styling services",
-      title1: "tailored to your",
-      title2: "perfection.",
-      description: "Enjoy complimentary size customisation and custom fit adjustments directly with our boutique designers.",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=700&q=80",
-      link: `/shop?mode=INDI`,
-      buttonText: "Shop Tailored Fits",
-    },
-    {
-      subtitle: "vamika & bhargavi luxe",
-      title1: "exquisite luxury",
-      title2: "couture.",
-      description: "Discover premium hand-crafted ensembles, high-end design aesthetics, and heritage apparel curated for modern elegance in our Luxe range.",
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80",
-      link: `/?mode=LUXE`,
-      buttonText: "Explore Luxe Collection",
+      link: "/shop",
+      buttonText: "Explore Casuals",
     },
   ];
-
-  const slides = mode === "LUXE" ? luxeSlides : indiSlides;
 
   // Auto slide effect
   useEffect(() => {
@@ -89,12 +53,7 @@ export default function HeroCarousel({ mode }: HeroCarouselProps) {
       setActiveSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, [slides.length, mode]);
-
-  // Reset slide index if mode changes
-  useEffect(() => {
-    setActiveSlide(0);
-  }, [mode]);
+  }, [slides.length]);
 
   const handlePrev = () => {
     setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -144,7 +103,7 @@ export default function HeroCarousel({ mode }: HeroCarouselProps) {
                     <ArrowRight className="ml-2.5 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                   <Link
-                    href={`/shop?mode=${mode}`}
+                    href="/shop"
                     className="inline-flex items-center justify-center bg-transparent border border-[#C5B495] text-brand-gold px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-white transition-all shadow-2xs hover:shadow-xs cursor-pointer"
                   >
                     View All Silhouettes

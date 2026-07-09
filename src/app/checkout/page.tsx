@@ -18,6 +18,7 @@ function CheckoutContent() {
     getTotalAmount,
     clearCart,
     isMounted,
+    refreshCart,
   } = useCart();
   
   const { data: session, status } = useSession();
@@ -52,6 +53,12 @@ function CheckoutContent() {
     };
     fetchWallet();
   }, [status]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      refreshCart();
+    }
+  }, [status, refreshCart]);
 
     // Guard route & Prefill fields
     useEffect(() => {
@@ -339,31 +346,31 @@ function CheckoutContent() {
         },
       };
 
-      if (typeof (window as any).Razorpay === "undefined") {
-        console.warn("Razorpay script not loaded yet.");
-        // Mock Mode fallback in development
-        if (keyId.includes("mockkey")) {
-          const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(7)}`;
-          const mockSignature = `mock_sig_${data.razorpayOrderId}_${mockPaymentId}`;
-          
-          const verifyRes = await fetch("/api/orders/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderNumber: data.orderNumber,
-              razorpayPaymentId: mockPaymentId,
-              razorpayOrderId: data.razorpayOrderId,
-              razorpaySignature: mockSignature,
-            }),
-          });
-          
-          if (verifyRes.ok) {
-            clearCart();
-            router.push(`/checkout/success?orderNumber=${data.orderNumber}`);
-            return;
-          }
-        }
+      // Auto-approve in development mock mode if key is missing/placeholder
+      if (keyId === "rzp_test_mockkey" || keyId.includes("mockkey")) {
+        console.log("Auto-verifying payment in mock mode...");
+        const mockPaymentId = `pay_mock_${Math.random().toString(36).substring(7)}`;
+        const mockSignature = `mock_sig_${data.razorpayOrderId}_${mockPaymentId}`;
         
+        const verifyRes = await fetch("/api/orders/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderNumber: data.orderNumber,
+            razorpayPaymentId: mockPaymentId,
+            razorpayOrderId: data.razorpayOrderId,
+            razorpaySignature: mockSignature,
+          }),
+        });
+        
+        if (verifyRes.ok) {
+          clearCart();
+          router.push(`/checkout/success?orderNumber=${data.orderNumber}`);
+          return;
+        }
+      }
+
+      if (typeof (window as any).Razorpay === "undefined") {
         setFormError("Payment gateway failed to initialize. Please refresh the page and try again.");
         setIsSubmitting(false);
         return;

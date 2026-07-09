@@ -57,6 +57,9 @@ export default function SellerDashboard() {
   const [returns, setReturns] = useState<any[]>([]);
   const [returnsLoading, setReturnsLoading] = useState(false);
   const [formStep, setFormStep] = useState<1 | 2 | 3>(1);
+  const [selectedProductForVariants, setSelectedProductForVariants] = useState<any | null>(null);
+  const [variantEditState, setVariantEditState] = useState<Record<string, { stock: number; price: number }>>({});
+  const [updatingVariants, setUpdatingVariants] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -176,6 +179,94 @@ export default function SellerDashboard() {
       console.error("Error loading products:", e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateDiscount = async (productId: string) => {
+    const inputElement = document.getElementById(`discount-input-${productId}`) as HTMLInputElement;
+    if (!inputElement) return;
+
+    const discountVal = parseFloat(inputElement.value);
+    if (isNaN(discountVal) || discountVal < 0 || discountVal > 100) {
+      alert("Please enter a valid discount percentage between 0 and 100.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/seller/products", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId,
+          discountPercent: discountVal,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setProducts((prev) =>
+          prev.map((prod) =>
+            prod.id === productId ? { ...prod, discountPercent: discountVal } : prod
+          )
+        );
+        alert(`Discount of ${discountVal}% successfully applied!`);
+      } else {
+        alert(data.error || "Failed to update discount.");
+      }
+    } catch (err) {
+      console.error("Error updating discount:", err);
+      alert("Failed to connect to server.");
+    }
+  };
+
+  const handleOpenVariantModal = (product: any) => {
+    setSelectedProductForVariants(product);
+    const initialStates: Record<string, { stock: number; price: number }> = {};
+    product.variants.forEach((v: any) => {
+      initialStates[v.id] = { stock: v.stock, price: v.price };
+    });
+    setVariantEditState(initialStates);
+  };
+
+  const handleUpdateVariantsSubmit = async () => {
+    if (!selectedProductForVariants) return;
+    setUpdatingVariants(true);
+
+    try {
+      const variantsPayload = Object.entries(variantEditState).map(([id, state]) => ({
+        id,
+        stock: state.stock,
+        price: state.price,
+      }));
+
+      const res = await fetch("/api/seller/products", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          productId: selectedProductForVariants.id,
+          variants: variantsPayload,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setProducts((prev) =>
+          prev.map((prod) =>
+            prod.id === selectedProductForVariants.id 
+              ? { ...prod, variants: data.product.variants } 
+              : prod
+          )
+        );
+        setSelectedProductForVariants(null);
+        alert("Inventory stock and prices successfully updated!");
+      } else {
+        alert(data.error || "Failed to update variants.");
+      }
+    } catch (err) {
+      console.error("Error updating variants:", err);
+      alert("Failed to connect to server.");
+    } finally {
+      setUpdatingVariants(false);
     }
   };
 
@@ -753,6 +844,7 @@ export default function SellerDashboard() {
                             <th className="px-6 py-3">Category</th>
                             <th className="px-6 py-3">Price Range</th>
                             <th className="px-6 py-3">Total Stock</th>
+                            <th className="px-6 py-3">Discount</th>
                             <th className="px-6 py-3">Details</th>
                           </tr>
                         </thead>
@@ -788,8 +880,32 @@ export default function SellerDashboard() {
                                     {totalStock} items
                                   </span>
                                 </td>
-                                <td className="px-6 py-4 text-gray-500 text-[10px] uppercase tracking-wide">
-                                  {prod.variants.length} size variants
+                                <td className="px-6 py-4">
+                                  <div className="flex items-center space-x-1">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      max="100"
+                                      defaultValue={prod.discountPercent || 0}
+                                      id={`discount-input-${prod.id}`}
+                                      className="w-11 bg-white border border-[#E8DFC8] rounded px-1 py-0.5 text-center font-sans text-xs focus:outline-none focus:border-brand-gold"
+                                    />
+                                    <span className="text-xs text-gray-400 font-sans">%</span>
+                                    <button
+                                      onClick={() => handleUpdateDiscount(prod.id)}
+                                      className="bg-brand-charcoal text-white hover:bg-brand-gold text-[9px] uppercase tracking-wider font-bold py-1 px-2 rounded-sm transition-all cursor-pointer"
+                                    >
+                                      Apply
+                                    </button>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                  <button
+                                    onClick={() => handleOpenVariantModal(prod)}
+                                    className="text-[10px] font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light border-b border-brand-gold/30 hover:border-brand-gold transition-colors cursor-pointer"
+                                  >
+                                    Edit Stock ({prod.variants.length})
+                                  </button>
                                 </td>
                               </tr>
                             );
@@ -1019,19 +1135,7 @@ export default function SellerDashboard() {
                       )}
                     </div>
 
-                    <div>
-                      <label className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                        Product Line / Tier
-                      </label>
-                      <select
-                        value={tier}
-                        onChange={(e) => setTier(e.target.value)}
-                        className="mt-1 block w-full rounded-md border border-[#E8DFC8] py-2 px-3 text-xs bg-white text-brand-charcoal focus:outline-none focus:border-brand-gold font-sans cursor-pointer"
-                      >
-                        <option value="LUXE">✨ LUXE (Premium Velvet/Silk Ensembles)</option>
-                        <option value="INDI">✥ INDI (Artisanal Linen & Tunic Coord Sets)</option>
-                      </select>
-                    </div>
+                    {/* Defaulting all product creations to LUXE line */}
 
                     <div>
                       <label className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
@@ -1956,6 +2060,100 @@ export default function SellerDashboard() {
             </div>
           </div>
         )}
+
+      {/* Variant Editor Modal */}
+      {selectedProductForVariants && (
+        <div className="fixed inset-0 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-[#FAF6F0] border border-[#E8DFC8] shadow-2xl rounded-lg max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-205">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-[#E8DFC8] flex items-center justify-between bg-[#FAF6F0]">
+              <div>
+                <h3 className="font-serif text-base font-bold text-brand-charcoal lowercase tracking-wide">
+                  edit size variants & stock
+                </h3>
+                <p className="text-[10px] text-gray-500 font-sans uppercase tracking-widest mt-0.5">
+                  Product: {selectedProductForVariants.title}
+                </p>
+              </div>
+              <button
+                onClick={() => setSelectedProductForVariants(null)}
+                className="text-stone-400 hover:text-brand-charcoal transition-colors cursor-pointer"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+              <div className="grid grid-cols-12 gap-3 text-[10px] font-sans font-bold uppercase tracking-widest text-gray-400 pb-1 border-b border-[#FAF5EC]">
+                <div className="col-span-4">Size</div>
+                <div className="col-span-4">Price (Rs.)</div>
+                <div className="col-span-4">Stock Quantity</div>
+              </div>
+
+              <div className="space-y-3">
+                {selectedProductForVariants.variants.map((v: any) => {
+                  const currentState = variantEditState[v.id] || { stock: v.stock, price: v.price };
+                  const sizeLabel = v.bottomSize 
+                    ? `Top: ${v.topSize} / Pant: ${v.bottomSize}`
+                    : `Size: ${v.topSize}`;
+
+                  return (
+                    <div key={v.id} className="grid grid-cols-12 gap-3 items-center font-sans text-xs">
+                      <div className="col-span-4 font-bold text-brand-charcoal truncate pr-2">
+                        {sizeLabel}
+                      </div>
+                      
+                      <div className="col-span-4">
+                        <input
+                          type="number"
+                          min="0"
+                          value={currentState.price}
+                          onChange={(e) => setVariantEditState(prev => ({
+                            ...prev,
+                            [v.id]: { ...prev[v.id], price: parseFloat(e.target.value) || 0 }
+                          }))}
+                          className="w-full bg-white border border-[#E8DFC8] rounded py-1.5 px-3 text-xs text-brand-charcoal focus:outline-none focus:border-brand-gold"
+                        />
+                      </div>
+
+                      <div className="col-span-4">
+                        <input
+                          type="number"
+                          min="0"
+                          value={currentState.stock}
+                          onChange={(e) => setVariantEditState(prev => ({
+                            ...prev,
+                            [v.id]: { ...prev[v.id], stock: parseInt(e.target.value) || 0 }
+                          }))}
+                          className="w-full bg-white border border-[#E8DFC8] rounded py-1.5 px-3 text-xs text-brand-charcoal focus:outline-none focus:border-brand-gold"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-[#FAF6F0]/50 border-t border-[#E8DFC8] flex justify-end space-x-3">
+              <button
+                onClick={() => setSelectedProductForVariants(null)}
+                className="px-4 py-2 bg-transparent border border-stone-400 text-stone-600 rounded text-xs font-sans font-bold uppercase tracking-widest hover:bg-stone-50 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateVariantsSubmit}
+                disabled={updatingVariants}
+                className="px-5 py-2 bg-brand-charcoal text-brand-cream hover:bg-brand-gold rounded text-xs font-sans font-bold uppercase tracking-widest transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              >
+                {updatingVariants ? "Saving changes..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       </main>
     </div>

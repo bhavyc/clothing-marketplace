@@ -51,7 +51,12 @@ export async function GET(req: NextRequest) {
         // ignore
       }
 
-      const unitPrice = item.variant.price + selectedOptionsList.reduce((acc: number, opt: any) => acc + (opt.priceAdjustment || 0), 0);
+      const discountPercent = product.discountPercent || 0;
+      const discountedBasePrice = discountPercent > 0 
+        ? item.variant.price * (1 - discountPercent / 100) 
+        : item.variant.price;
+
+      const unitPrice = discountedBasePrice + selectedOptionsList.reduce((acc: number, opt: any) => acc + (opt.priceAdjustment || 0), 0);
 
       return {
         id: item.id,
@@ -63,7 +68,7 @@ export async function GET(req: NextRequest) {
         variantId: item.variant.id,
         topSize: item.variant.topSize,
         bottomSize: item.variant.bottomSize,
-        basePrice: item.variant.price,
+        basePrice: discountedBasePrice,
         selectedOptions: selectedOptionsList,
         quantity: item.quantity,
         unitPrice,

@@ -21,7 +21,12 @@ import {
   ShoppingBag,
   Wallet,
   BarChart3,
-  MessageSquare
+  MessageSquare,
+  MapPin,
+  Calendar,
+  Mail,
+  Phone,
+  Search
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -43,7 +48,11 @@ export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<"overview" | "sellers" | "coupons" | "products" | "orders" | "returns" | "transactions" | "sales" | "campaigns">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "sellers" | "coupons" | "products" | "orders" | "returns" | "transactions" | "sales" | "campaigns" | "users">("overview");
+  const [users, setUsers] = useState<any[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersPage, setUsersPage] = useState(1);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
   const [returns, setReturns] = useState<any[]>([]);
   const [returnsLoading, setReturnsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -215,8 +224,117 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchUsers = async () => {
+    if (!session?.user || (session.user as any).role !== "ADMIN") return;
+    try {
+      setUsersLoading(true);
+      const res = await fetch("/api/admin/users");
+      const data = await res.json();
+      if (res.ok) {
+        setUsers(data.users || []);
+        setUsersPage(1);
+      } else {
+        alert(data.error || "Failed to load users.");
+      }
+    } catch (e) {
+      console.error("Error loading users:", e);
+    } finally {
+      setUsersLoading(false);
+    }
+  };
+
+  const downloadCheckoutDetailsCSV = async () => {
+    setActionLoading(true);
+    try {
+      let ordersToExport = orders;
+      if (ordersToExport.length === 0) {
+        const res = await fetch("/api/admin/orders");
+        const data = await res.json();
+        if (res.ok) {
+          ordersToExport = data.orders || [];
+        } else {
+          alert(data.error || "Failed to fetch checkout details for export.");
+          return;
+        }
+      }
+      
+      if (ordersToExport.length === 0) {
+        alert("No checkout details/orders available to download.");
+        return;
+      }
+
+      // Define CSV headers
+      const headers = [
+        "Order Number",
+        "Customer Name",
+        "Customer Email",
+        "Customer Phone",
+        "Shipping Address",
+        "City",
+        "State",
+        "Pincode",
+        "Payment Type",
+        "Payment Status",
+        "Total Amount (Rs.)",
+        "Wallet Paid (Rs.)",
+        "Coupon Used",
+        "Order Status",
+        "Order Date"
+      ];
+
+      const escapeCSV = (val: any) => {
+        if (val === null || val === undefined) return "";
+        let str = String(val).replace(/"/g, '""');
+        if (str.includes(",") || str.includes("\n") || str.includes("\r") || str.includes('"')) {
+          str = `"${str}"`;
+        }
+        return str;
+      };
+
+      const rows = ordersToExport.map((ord) => [
+        ord.orderNumber,
+        ord.customerName,
+        ord.customerEmail,
+        ord.customerPhone,
+        ord.shippingAddress,
+        ord.city,
+        ord.state,
+        ord.pincode,
+        ord.paymentType,
+        ord.paymentStatus,
+        ord.totalAmount,
+        ord.walletPaid,
+        ord.couponUsed || "None",
+        ord.status,
+        new Date(ord.createdAt).toLocaleString()
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) => row.map(escapeCSV).join(","))
+      ].join("\n");
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `checkout_details_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Error exporting checkout details:", err);
+      alert("An error occurred during export.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (activeTab === "returns") {
+    if (activeTab === "users") {
+      fetchUsers();
+    } else if (activeTab === "returns") {
       fetchReturns();
     } else if (activeTab === "orders" || activeTab === "transactions" || activeTab === "sales") {
       fetchOrders();
@@ -672,6 +790,17 @@ export default function AdminDashboard() {
             >
               <MessageSquare className="h-4 w-4 mr-3" />
               WhatsApp Campaigns
+            </button>
+            <button
+              onClick={() => setActiveTab("users")}
+              className={`w-full flex items-center px-4 py-3 rounded text-xs font-bold uppercase tracking-widest transition-all ${
+                activeTab === "users"
+                  ? "bg-brand-gold text-brand-cream"
+                  : "text-stone-300 hover:bg-stone-800 hover:text-white"
+              }`}
+            >
+              <Users className="h-4 w-4 mr-3" />
+              Manage Users
             </button>
           </nav>
         </div>
@@ -1328,14 +1457,22 @@ export default function AdminDashboard() {
                 <h3 className="font-serif text-sm font-bold uppercase tracking-wider text-brand-charcoal">
                   Boutique Orders List
                 </h3>
-                <button
-                  onClick={fetchOrders}
-                  disabled={ordersLoading}
-                  className="text-[10px] font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light flex items-center gap-1 disabled:opacity-50"
-                >
-                  <RefreshCw className={`h-3.5 w-3.5 ${ordersLoading ? 'animate-spin' : ''}`} />
-                  Refresh
-                </button>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={downloadCheckoutDetailsCSV}
+                    className="text-[10px] font-sans font-bold uppercase tracking-widest bg-brand-charcoal text-brand-cream hover:bg-brand-gold px-3 py-1.5 rounded flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    Download Excel
+                  </button>
+                  <button
+                    onClick={fetchOrders}
+                    disabled={ordersLoading}
+                    className="text-[10px] font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light flex items-center gap-1 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 ${ordersLoading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </button>
+                </div>
               </div>
 
               {ordersLoading ? (
@@ -2477,6 +2614,269 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* Tab: Users Management */}
+        {activeTab === "users" && (() => {
+          const filteredUsers = users.filter((u) => {
+            const latestOrder = u.orders?.[0];
+            const nameStr = (latestOrder?.customerName || u.name || "").toLowerCase();
+            const emailStr = (latestOrder?.customerEmail || u.email || "").toLowerCase();
+            const phoneStr = (latestOrder?.customerPhone || u.phone || "").toLowerCase();
+            const q = userSearchQuery.toLowerCase();
+            return nameStr.includes(q) || emailStr.includes(q) || phoneStr.includes(q);
+          });
+
+          return (
+            <div className="space-y-8 animate-in fade-in duration-200">
+              <div className="border-b border-[#E8DFC8] pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h2 className="font-serif text-3xl font-semibold tracking-wide lowercase">
+                    registered users list
+                  </h2>
+                  <p className="font-sans text-xs text-gray-500 uppercase tracking-widest mt-1">
+                    View profiles, wallet credit balances, account roles, and marketing permissions
+                  </p>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={downloadCheckoutDetailsCSV}
+                    className="text-[10px] font-sans font-bold uppercase tracking-widest bg-brand-charcoal text-brand-cream hover:bg-brand-gold px-4 py-2.5 rounded flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  >
+                    Download Checkout Excel
+                  </button>
+                  <button
+                    onClick={fetchUsers}
+                    disabled={usersLoading}
+                    className="text-[10px] font-sans font-bold uppercase tracking-widest text-[#B5A47C] bg-white border border-[#E8DFC8] px-4 py-2 rounded flex items-center gap-1.5 transition-all hover:bg-[#FAF6F0]/35 disabled:opacity-50 cursor-pointer shadow-xs"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 ${usersLoading ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </button>
+                </div>
+              </div>
+
+              {/* Metrics cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="bg-white p-5 rounded-md border border-[#E8DFC8] shadow-sm flex items-center space-x-4">
+                  <div className="p-3 bg-[#FAF6F0] rounded border border-[#E8DFC8] text-brand-gold">
+                    <Users className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-sans text-stone-400 uppercase tracking-widest font-bold">Total Customers</p>
+                    <p className="text-lg font-bold font-sans text-brand-charcoal mt-0.5">{users.length}</p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-md border border-[#E8DFC8] shadow-sm flex items-center space-x-4">
+                  <div className="p-3 bg-[#FAF6F0] rounded border border-[#E8DFC8] text-emerald-700">
+                    <MessageSquare className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-sans text-stone-400 uppercase tracking-widest font-bold">WhatsApp Opt-in</p>
+                    <p className="text-lg font-bold font-sans text-brand-charcoal mt-0.5">
+                      {users.length > 0 
+                        ? `${Math.round((users.filter(u => u.optInWhatsApp).length / users.length) * 100)}%` 
+                        : "0%"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-5 rounded-md border border-[#E8DFC8] shadow-sm flex items-center space-x-4">
+                  <div className="p-3 bg-[#FAF6F0] rounded border border-[#E8DFC8] text-brand-charcoal">
+                    <Wallet className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-sans text-stone-400 uppercase tracking-widest font-bold">Total Wallet Balances</p>
+                    <p className="text-lg font-bold font-sans text-brand-charcoal mt-0.5">
+                      Rs. {users.reduce((acc, u) => acc + u.walletBalance, 0).toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search and Filters */}
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-[#FAF6F0]/20 p-4 rounded-md border border-[#E8DFC8] shadow-sm">
+                <div className="relative w-full sm:w-80">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by name, email, phone..."
+                    value={userSearchQuery}
+                    onChange={(e) => {
+                      setUserSearchQuery(e.target.value);
+                      setUsersPage(1);
+                    }}
+                    className="pl-9 pr-4 py-2 w-full rounded-md border border-[#E8DFC8] text-xs font-sans placeholder:text-stone-400 focus:outline-none focus:border-brand-gold bg-white transition-all shadow-xs"
+                  />
+                </div>
+                <div className="text-[10px] text-stone-400 font-sans uppercase tracking-widest font-bold">
+                  Showing {filteredUsers.length} of {users.length} Customer Accounts
+                </div>
+              </div>
+
+              {/* Users Table */}
+              <div className="bg-white rounded-md border border-[#E8DFC8] overflow-hidden shadow-sm">
+                {usersLoading ? (
+                  <div className="p-24 text-center flex flex-col items-center justify-center space-y-2">
+                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-brand-gold border-t-transparent" />
+                    <p className="font-serif text-sm text-stone-600">Loading user accounts...</p>
+                  </div>
+                ) : filteredUsers.length === 0 ? (
+                  <div className="p-20 text-center">
+                    <Users className="h-10 w-10 text-[#E8DFC8] mx-auto mb-3" />
+                    <p className="font-serif text-base text-stone-600">No customers found.</p>
+                    <p className="font-sans text-[11px] text-stone-400 mt-1 uppercase tracking-wide">
+                      Try adjusting your search filters or check back later.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    {(() => {
+                      const totalUsersPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+                      const paginatedUsers = filteredUsers.slice(
+                        (usersPage - 1) * ITEMS_PER_PAGE,
+                        usersPage * ITEMS_PER_PAGE
+                      );
+                      return (
+                        <>
+                          <table className="w-full text-left text-xs font-sans">
+                            <thead className="bg-[#FAF6F0] border-b border-[#E8DFC8] text-gray-500 uppercase tracking-wider text-[10px] font-bold">
+                              <tr>
+                                <th className="px-6 py-4">Joined Date</th>
+                                <th className="px-6 py-4">Customer Details</th>
+                                <th className="px-6 py-4">Shipping Address (Checkout)</th>
+                                <th className="px-6 py-4">Wallet Balance</th>
+                                <th className="px-6 py-4 text-right">WhatsApp Opt-in</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#FAF5EC] text-brand-charcoal bg-white">
+                              {paginatedUsers.map((u) => {
+                                const latestOrder = u.orders?.[0];
+                                const displayName = latestOrder?.customerName || u.name || "Unnamed";
+                                const displayEmail = latestOrder?.customerEmail || u.email;
+                                const displayPhone = latestOrder?.customerPhone || u.phone || "N/A";
+
+                                let roleBadgeClass = "bg-stone-100 text-stone-700 border-stone-200";
+                                if (u.role === "ADMIN") roleBadgeClass = "bg-red-50 text-red-800 border-red-200";
+                                else if (u.role === "SELLER") roleBadgeClass = "bg-amber-50 text-amber-800 border-amber-200";
+
+                                return (
+                                  <tr key={u.id} className="hover:bg-[#FAF6F0]/20 transition-colors align-top">
+                                    <td className="px-6 py-4 whitespace-nowrap text-stone-500 align-top pt-5">
+                                      <div className="flex items-center gap-1.5">
+                                        <Calendar className="h-3.5 w-3.5 text-[#A59578] flex-shrink-0" />
+                                        <span>
+                                          {new Date(u.createdAt).toLocaleDateString(undefined, {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                          })}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                      <div className="flex items-start space-x-3">
+                                        <div className="h-9 w-9 rounded-full bg-[#FAF6F0] border border-[#E8DFC8] flex items-center justify-center flex-shrink-0 text-brand-gold font-serif font-bold text-xs uppercase shadow-2xs">
+                                          {displayName.split(" ").map((w: string) => w[0]).join("").slice(0, 2) || "U"}
+                                        </div>
+                                        <div className="space-y-1">
+                                          <div className="font-serif text-sm font-bold text-brand-charcoal leading-none flex items-center gap-1.5">
+                                            {displayName}
+                                            <span className={`inline-block px-1 py-0.5 border rounded text-[7.5px] font-sans font-bold uppercase tracking-wider ${roleBadgeClass}`}>
+                                              {u.role}
+                                            </span>
+                                          </div>
+                                          <div className="text-[10px] text-stone-500 flex items-center gap-1 pt-0.5">
+                                            <Mail className="h-3 w-3 text-[#A59578] flex-shrink-0" />
+                                            <span>{displayEmail}</span>
+                                          </div>
+                                          <div className="text-[10px] text-stone-500 flex items-center gap-1">
+                                            <Phone className="h-3 w-3 text-[#A59578] flex-shrink-0" />
+                                            <span>{displayPhone}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 max-w-[280px]">
+                                      {latestOrder ? (
+                                        <div className="bg-[#FAF6F0]/40 p-2.5 rounded border border-[#FAF5EC] text-[11px] text-stone-600 font-sans tracking-wide leading-relaxed flex items-start gap-1.5">
+                                          <MapPin className="h-3.5 w-3.5 text-brand-gold mt-0.5 flex-shrink-0" />
+                                          <span>
+                                            {latestOrder.shippingAddress}, {latestOrder.city}, {latestOrder.state} - <strong className="text-brand-charcoal">{latestOrder.pincode}</strong>
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <div className="inline-flex items-center gap-1.5 text-stone-400 italic text-[10px] bg-stone-50 border border-stone-100 py-1.5 px-2.5 rounded">
+                                          <MapPin className="h-3.5 w-3.5 text-stone-300 flex-shrink-0" />
+                                          <span>No checkout address filled yet</span>
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap align-top pt-5">
+                                      <div className="flex items-center gap-1.5 font-bold text-xs text-brand-charcoal">
+                                        <Wallet className="h-3.5 w-3.5 text-[#A59578] flex-shrink-0" />
+                                        <span>Rs. {u.walletBalance.toLocaleString("en-IN")}</span>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right align-top pt-5">
+                                      {u.optInWhatsApp ? (
+                                        <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-sans text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-emerald-100">
+                                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                          Opted In
+                                        </span>
+                                      ) : (
+                                        <span className="inline-flex items-center gap-1 bg-stone-50 text-stone-400 font-sans text-[8px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-stone-200">
+                                          <span className="h-1.5 w-1.5 rounded-full bg-stone-300" />
+                                          Opted Out
+                                        </span>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+
+                          {totalUsersPages > 1 && (
+                            <div className="flex justify-center items-center space-x-2 border-t border-[#FAF5EC] py-4 bg-[#FAF6F0]/20">
+                              <button
+                                type="button"
+                                onClick={() => setUsersPage((p) => Math.max(1, p - 1))}
+                                disabled={usersPage <= 1}
+                                className={`px-3 py-1.5 border border-[#E8DFC8] rounded-md text-[10px] font-sans font-bold uppercase tracking-widest transition-all ${
+                                  usersPage <= 1
+                                    ? "opacity-45 cursor-not-allowed bg-[#FAF6F0] text-gray-400"
+                                    : "bg-white text-brand-charcoal hover:border-brand-gold hover:text-brand-gold shadow-xs"
+                                }`}
+                              >
+                                Prev
+                              </button>
+                              <span className="text-[10px] font-sans text-gray-500 font-bold uppercase tracking-widest px-3">
+                                Page {usersPage} of {totalUsersPages}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setUsersPage((p) => Math.min(totalUsersPages, p + 1))}
+                                disabled={usersPage >= totalUsersPages}
+                                className={`px-3 py-1.5 border border-[#E8DFC8] rounded-md text-[10px] font-sans font-bold uppercase tracking-widest transition-all ${
+                                  usersPage >= totalUsersPages
+                                    ? "opacity-45 cursor-not-allowed bg-[#FAF6F0] text-gray-400"
+                                    : "bg-white text-brand-charcoal hover:border-brand-gold hover:text-brand-gold shadow-xs"
+                                }`}
+                              >
+                                Next
+                              </button>
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </main>
     </div>
   );

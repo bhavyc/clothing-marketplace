@@ -36,6 +36,7 @@ export interface ProductDetailProps {
     sleeveLength: string | null;
     sizeChartType: string;
     sizeChartData: string | null;
+    discountPercent?: number;
     seller: {
       shopName: string;
     };
@@ -54,34 +55,29 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
   } catch (e) {
     if (typeof product.images === "string" && product.images.includes(",")) {
       images = product.images.split(",");
-    } else if (typeof product.images === "string") {
+    } else {
       images = [product.images];
     }
   }
 
-  // State
   const [activeImage, setActiveImage] = useState(images[0] || "/placeholder.jpg");
-  const [selectedTopSize, setSelectedTopSize] = useState<string>("");
-  const [selectedBottomSize, setSelectedBottomSize] = useState<string>("");
-  
-  // Track checked state for optional additions (e.g. "Dupatta")
+  const [selectedTopSize, setSelectedTopSize] = useState("");
+  const [selectedBottomSize, setSelectedBottomSize] = useState("");
   const [selectedOptions, setSelectedOptions] = useState<Record<string, boolean>>({});
-  
   const [quantity, setQuantity] = useState(1);
+  const [showSizeChart, setShowSizeChart] = useState(false);
   const [activeAccordion, setActiveAccordion] = useState<string | null>("details");
   const [cartSuccess, setCartSuccess] = useState(false);
   const [origin, setOrigin] = useState("");
-  const [showSizeChart, setShowSizeChart] = useState(false);
 
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
 
-  // Filter unique top & bottom sizes from variants
+  // Derive unique sizes listed for the dropdown options
   const topSizes = Array.from(
     new Set(product.variants.map((v) => v.topSize).filter(Boolean))
   ) as string[];
-  
   const bottomSizes = Array.from(
     new Set(product.variants.map((v) => v.bottomSize).filter(Boolean))
   ) as string[];
@@ -94,12 +90,16 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
   });
 
   // Calculate Base Price
-  // If a specific variant is selected, use that. Otherwise, show starting price.
   const basePrice = activeVariant
     ? activeVariant.price
     : product.variants.length > 0
     ? Math.min(...product.variants.map((v) => v.price))
     : 0;
+
+  const discountPercent = product.discountPercent || 0;
+  const discountedBasePrice = discountPercent > 0 
+    ? basePrice * (1 - discountPercent / 100) 
+    : basePrice;
 
   // Calculate Options Additions
   const chosenOptionsList = product.options.filter((opt) => selectedOptions[opt.id]);
@@ -109,7 +109,7 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
   );
 
   // Total Unit Price
-  const totalUnitPrice = basePrice + optionsAdjustment;
+  const totalUnitPrice = discountedBasePrice + optionsAdjustment;
   
   // Total Quantity Price
   const totalPrice = totalUnitPrice * quantity;
@@ -170,7 +170,7 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
       variantId: activeVariant.id,
       topSize: selectedTopSize || null,
       bottomSize: product.isSet ? selectedBottomSize || null : null,
-      basePrice: activeVariant.price,
+      basePrice: discountedBasePrice,
       selectedOptions: chosenOptionsList.map((opt) => ({
         id: opt.id,
         optionName: opt.optionName,
@@ -240,10 +240,20 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
             </h1>
             
             {/* Dynamic Price Display */}
-            <div className="mt-4 flex items-baseline">
+            <div className="mt-4 flex items-baseline space-x-3 flex-wrap gap-y-1">
               <span className="font-sans text-2xl font-bold text-brand-charcoal">
                 Rs. {totalUnitPrice.toLocaleString("en-IN")}
               </span>
+              {discountPercent > 0 && (
+                <>
+                  <span className="font-sans text-sm line-through text-gray-400">
+                    Rs. {(basePrice + optionsAdjustment).toLocaleString("en-IN")}
+                  </span>
+                  <span className="bg-red-50 border border-red-100 text-red-650 text-[10px] font-sans font-bold px-2 py-0.5 rounded-sm uppercase tracking-wider animate-pulse">
+                    {discountPercent}% OFF
+                  </span>
+                </>
+              )}
               {!activeVariant && product.variants.length > 1 && (
                 <span className="ml-2.5 font-sans text-xs text-brand-gold uppercase tracking-wider font-semibold">
                   (select size for exact price)

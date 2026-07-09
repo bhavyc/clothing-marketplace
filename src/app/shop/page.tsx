@@ -31,7 +31,6 @@ export default async function ShopPage({
   let maxPrice = params.maxPrice ? parseFloat(params.maxPrice) : 999999;
   if (isNaN(maxPrice)) maxPrice = 999999;
   const sort = params.sort || "newest";
-  const mode = params.mode === "INDI" ? "INDI" : "LUXE";
   const page = params.page || "1";
 
   let dbProducts: any[] = [];
@@ -39,9 +38,8 @@ export default async function ShopPage({
   let collections: string[] = [];
 
   try {
-    // 1. Fetch filter facets from DB filtered by mode
+    // 1. Fetch filter facets from DB
     const allProducts = await prisma.product.findMany({
-      where: { tier: mode },
       select: { category: true, collection: true },
     });
     
@@ -49,9 +47,7 @@ export default async function ShopPage({
     collections = Array.from(new Set(allProducts.map((p) => p.collection).filter(Boolean))) as string[];
 
     // 2. Build Prisma Query filters
-    const whereClause: any = {
-      tier: mode,
-    };
+    const whereClause: any = {};
 
     if (search) {
       whereClause.OR = [
@@ -95,21 +91,29 @@ export default async function ShopPage({
       const prices = product.variants.map((v: any) => v.price);
       if (prices.length === 0) return false;
       const startingPrice = Math.min(...prices);
-      return startingPrice >= minPrice && startingPrice <= maxPrice;
+      const discountPercent = product.discountPercent || 0;
+      const discountedPrice = discountPercent > 0 
+        ? startingPrice * (1 - discountPercent / 100) 
+        : startingPrice;
+      return discountedPrice >= minPrice && discountedPrice <= maxPrice;
     });
 
     // Apply sorting
     if (sort === "price-asc") {
       dbProducts.sort((a, b) => {
         const aMin = Math.min(...a.variants.map((v: any) => v.price));
+        const aPrice = a.discountPercent > 0 ? aMin * (1 - a.discountPercent / 100) : aMin;
         const bMin = Math.min(...b.variants.map((v: any) => v.price));
-        return aMin - bMin;
+        const bPrice = b.discountPercent > 0 ? bMin * (1 - b.discountPercent / 100) : bMin;
+        return aPrice - bPrice;
       });
     } else if (sort === "price-desc") {
       dbProducts.sort((a, b) => {
         const aMin = Math.min(...a.variants.map((v: any) => v.price));
+        const aPrice = a.discountPercent > 0 ? aMin * (1 - a.discountPercent / 100) : aMin;
         const bMin = Math.min(...b.variants.map((v: any) => v.price));
-        return bMin - aMin;
+        const bPrice = b.discountPercent > 0 ? bMin * (1 - b.discountPercent / 100) : bMin;
+        return bPrice - aPrice;
       });
     } else {
       // default newest
@@ -123,10 +127,10 @@ export default async function ShopPage({
   const hasDbProducts = dbProducts.length > 0;
   
   if (categories.length === 0) {
-    categories = mode === "LUXE" ? ["Pheran Set", "Salwar"] : ["Kurta", "Salwar"];
+    categories = ["Pheran Set", "Salwar", "Kurta"];
   }
   if (collections.length === 0) {
-    collections = mode === "LUXE" ? ["Aari Embroidery", "Luxe Festive"] : ["Summer Linen", "Bestsellers"];
+    collections = ["Aari Embroidery", "Luxe Festive", "Summer Linen", "Bestsellers"];
   }
 
   const mockProducts = [
@@ -189,7 +193,7 @@ export default async function ShopPage({
   const hasFiltersApplied = search || category || collection || minPrice > 0 || maxPrice < 999999;
   const productsToDisplay = hasDbProducts 
     ? dbProducts 
-    : (hasFiltersApplied ? [] : mockProducts.filter((p) => p.tier === mode));
+    : (hasFiltersApplied ? [] : mockProducts);
 
   const ITEMS_PER_PAGE = 6;
   const parsedPage = parseInt(page);
@@ -210,7 +214,6 @@ export default async function ShopPage({
       minPrice: minPrice > 0 ? minPrice.toString() : "",
       maxPrice: maxPrice < 999999 ? maxPrice.toString() : "",
       sort,
-      mode,
       page: "1", // reset page to 1 by default on other filter updates
       ...newParams,
     };
@@ -254,7 +257,7 @@ export default async function ShopPage({
                 {hasFiltersApplied && (
                   <div className="flex justify-end border-b border-[#FAF5EC] pb-3">
                     <Link
-                      href={`/shop?mode=${mode}`}
+                      href="/shop"
                       className="font-sans text-[10px] uppercase tracking-widest text-brand-gold font-semibold hover:text-brand-gold-light"
                     >
                       Clear All Filters
@@ -275,7 +278,7 @@ export default async function ShopPage({
                       defaultValue={search}
                       className="w-full bg-white border border-[#E8DFC8] rounded-md py-1.5 px-3 text-xs text-brand-charcoal placeholder:text-gray-400 focus:outline-none focus:border-brand-gold font-sans"
                     />
-                    <input type="hidden" name="mode" value={mode} />
+                    {/* No mode parameter */}
                   </form>
                 </div>
 
@@ -380,7 +383,7 @@ export default async function ShopPage({
               </h2>
               {hasFiltersApplied && (
                 <Link
-                  href={`/shop?mode=${mode}`}
+                  href="/shop"
                   className="font-sans text-[10px] uppercase tracking-widest text-brand-gold font-semibold hover:text-brand-gold-light"
                 >
                   Clear All
@@ -401,7 +404,7 @@ export default async function ShopPage({
                   defaultValue={search}
                   className="w-full bg-white border border-[#E8DFC8] rounded-md py-1.5 px-3 text-xs text-brand-charcoal placeholder:text-gray-400 focus:outline-none focus:border-brand-gold font-sans"
                 />
-                <input type="hidden" name="mode" value={mode} />
+                {/* No mode parameter */}
               </form>
             </div>
 
@@ -518,7 +521,7 @@ export default async function ShopPage({
                 <p className="font-serif text-lg text-brand-charcoal">No items match your filters.</p>
                 <p className="font-sans text-xs text-gray-400 uppercase tracking-widest mt-1">Try resetting search keywords or categories.</p>
                 <Link
-                  href={`/shop?mode=${mode}`}
+                  href="/shop"
                   className="mt-6 inline-flex items-center bg-brand-charcoal text-brand-cream px-6 py-2.5 text-xs font-sans uppercase font-bold tracking-widest rounded-md hover:bg-opacity-95 transition-all cursor-pointer"
                 >
                   Reset All Filters
