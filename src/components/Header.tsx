@@ -315,7 +315,7 @@ export default function Header() {
 
       {/* Mobile Navigation Drawer - constrained height & scrollable to avoid overflow cutoff on small screens */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#FDFBF7] border-t border-[#FAF5EC] py-4 px-4 space-y-3 shadow-inner max-h-[calc(100vh-4.5rem)] overflow-y-auto">
+        <div className="md:hidden absolute left-0 right-0 top-full bg-[#FDFBF7] border-t border-b border-[#FAF5EC] py-4 px-4 space-y-3 shadow-2xl max-h-[calc(100vh-4.5rem)] overflow-y-auto z-50">
           <Link
             href="/"
             onClick={() => setIsMobileMenuOpen(false)}

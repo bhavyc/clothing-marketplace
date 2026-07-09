@@ -103,9 +103,8 @@ export async function POST(req: NextRequest) {
     };
 
     // For dev mode convenience, expose the OTP in response
-    if (process.env.NODE_ENV !== "production") {
-      responsePayload.devOtp = otp;
-    }
+    // Temporarily enabled even in production for Vercel dev deployment as requested
+    responsePayload.devOtp = otp;
 
     return NextResponse.json(responsePayload);
   } catch (error: any) {

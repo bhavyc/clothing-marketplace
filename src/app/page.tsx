@@ -303,17 +303,17 @@ export default async function Home() {
 
       {/* Featured Collections / Categories */}
       <section className="py-6 overflow-hidden">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-12 lg:px-16 mb-4">
-          <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-            <div className="text-left space-y-1.5">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-12 lg:px-16 mb-8 sm:mb-6">
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 sm:gap-4">
+            <div className="text-center sm:text-left space-y-2 sm:space-y-1.5">
               <p className="text-[11px] text-brand-gold uppercase tracking-[0.2em] font-sans font-bold">Curated Closets</p>
-              <h2 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
+              <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
                 shop by <span className="font-normal italic text-brand-gold">collection</span>
               </h2>
             </div>
             <Link
               href="/shop"
-              className="inline-flex items-center text-xs font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-0.5 hover:border-brand-gold"
+              className="inline-flex items-center text-xs font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-0.5 hover:border-brand-gold mt-2 sm:mt-0"
             >
               Shop All Collections
               <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
@@ -327,14 +327,14 @@ export default async function Home() {
       {/* Dynamic Bestsellers Shelf */}
       <section className="bg-[#FAF6F0] py-10 sm:py-20 border-t border-b border-[#E8DFC8]">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-12 lg:px-16">
-          <div className="mb-8 sm:mb-12 w-full flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
-            <div className="text-left space-y-2 sm:space-y-3">
+          <div className="mb-10 sm:mb-12 w-full flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 sm:gap-4">
+            <div className="text-center sm:text-left space-y-2 sm:space-y-3">
               <p className="text-[11px] text-brand-gold uppercase tracking-widest font-sans font-bold">Highly Coveted</p>
-              <h2 className="font-serif text-2xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
+              <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold lowercase">
                 the bestsellers <span className="font-normal italic text-brand-gold">shelf</span>
               </h2>
             </div>
-            <div className="flex gap-4 sm:gap-6 items-center flex-wrap">
+            <div className="flex gap-4 sm:gap-6 items-center flex-wrap justify-center sm:justify-start mt-2 sm:mt-0">
               <Link
                 href="/shop?collection=Bestsellers"
                 className="inline-flex items-center text-xs font-sans font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-0.5 hover:border-brand-gold"

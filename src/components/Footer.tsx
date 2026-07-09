@@ -2,113 +2,128 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { X, Mail, Phone, Clock } from "lucide-react";
+import { X, Mail, Phone, Clock, ChevronDown } from "lucide-react";
 
 export default function Footer() {
   const [activeModal, setActiveModal] = useState<"care" | "shipping" | "tailoring" | null>(null);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setExpandedSection(expandedSection === section ? null : section);
+  };
 
   return (
-    <footer className="bg-[#FAF6F0] border-t border-[#E8DFC8] py-14 px-6 mt-auto">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer className="bg-[#FAF6F0] border-t border-[#E8DFC8] py-8 md:py-14 px-6 mt-auto">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-0 md:gap-10">
         
         {/* Brand Column */}
-        <div className="space-y-4">
-          <h3 className="font-serif text-xl font-semibold lowercase tracking-widest text-brand-charcoal flex items-baseline gap-1.5">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left mb-8 md:mb-0">
+          <h3 className="font-serif text-xl font-semibold lowercase tracking-widest text-brand-charcoal flex items-baseline gap-1.5 mb-4">
             vamika <span className="font-serif italic text-brand-gold font-normal">&</span> bhargavi
           </h3>
-          <p className="font-sans text-xs text-stone-500 leading-relaxed uppercase tracking-wider">
+          <p className="font-sans text-xs text-stone-500 leading-relaxed uppercase tracking-wider mb-5">
             Exquisite handmade apparel, coord sets and traditional silhouettes tailored to perfection.
           </p>
-          <div className="pt-1 flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2.5">
             <span className="text-[9px] font-sans font-bold uppercase tracking-[0.12em] text-brand-gold border border-brand-gold/30 px-2.5 py-1 rounded-xs bg-white shadow-3xs">
               Razorpay Secure Checkout
             </span>
           </div>
         </div>
 
-        <div className="space-y-4 text-left">
-          <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
-            Collections
-          </h4>
-          <ul className="space-y-2.5 font-sans text-xs">
-            <li>
-              <Link 
-                href="/shop?collection=Bestsellers" 
-                className="text-stone-600 hover:text-brand-gold transition-colors block"
-              >
-                Bestsellers Shelf
-              </Link>
-            </li>
-            <li>
-              <Link 
-                href="/shop" 
-                className="text-stone-600 hover:text-brand-gold transition-colors block"
-              >
-                Explore All
-              </Link>
-            </li>
-          </ul>
+        {/* Collections */}
+        <div className="border-b border-[#E8DFC8]/40 md:border-none py-5 md:py-0">
+          <button 
+            type="button"
+            onClick={() => toggleSection('collections')}
+            className="flex items-center justify-between w-full md:cursor-default"
+          >
+            <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
+              Collections
+            </h4>
+            <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'collections' ? 'rotate-180' : ''}`} />
+          </button>
+          
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'collections' ? 'max-h-40 mt-4' : 'max-h-0'}`}>
+            <ul className="space-y-3 font-sans text-xs w-full text-left">
+              <li>
+                <Link href="/shop?collection=Bestsellers" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Bestsellers Shelf
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Explore All
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* The Studio Column */}
-        <div className="space-y-4 text-left">
-          <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
-            The Studio
-          </h4>
-          <ul className="space-y-2.5 font-sans text-xs">
-            <li>
-              <Link 
-                href="/about" 
-                className="text-stone-600 hover:text-brand-gold transition-colors block"
-              >
-                Our Story
-              </Link>
-            </li>
-            <li>
-              <button 
-                type="button"
-                onClick={() => setActiveModal("tailoring")}
-                className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans"
-              >
-                Custom Tailoring
-              </button>
-            </li>
-            <li>
-              <button 
-                type="button"
-                onClick={() => setActiveModal("care")}
-                className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans"
-              >
-                Care Instructions
-              </button>
-            </li>
-            <li>
-              <button 
-                type="button"
-                onClick={() => setActiveModal("shipping")}
-                className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans"
-              >
-                Shipping & Returns
-              </button>
-            </li>
-          </ul>
+        <div className="border-b border-[#E8DFC8]/40 md:border-none py-5 md:py-0">
+          <button 
+            type="button"
+            onClick={() => toggleSection('studio')}
+            className="flex items-center justify-between w-full md:cursor-default"
+          >
+            <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
+              The Studio
+            </h4>
+            <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'studio' ? 'rotate-180' : ''}`} />
+          </button>
+
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'studio' ? 'max-h-48 mt-4' : 'max-h-0'}`}>
+            <ul className="space-y-3 font-sans text-xs w-full text-left">
+              <li>
+                <Link href="/about" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Our Story
+                </Link>
+              </li>
+              <li>
+                <button type="button" onClick={() => setActiveModal("tailoring")} className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans">
+                  Custom Tailoring
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => setActiveModal("care")} className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans">
+                  Care Instructions
+                </button>
+              </li>
+              <li>
+                <button type="button" onClick={() => setActiveModal("shipping")} className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans">
+                  Shipping & Returns
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Boutique Support Column */}
-        <div className="space-y-4 text-left">
-          <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
-            Boutique Support
-          </h4>
-          <div className="space-y-2.5 text-xs text-stone-600 font-sans">
-            <div className="flex items-center gap-2">
-              <Mail className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-              <a href="mailto:care@vamikabhargavi.com" className="hover:text-brand-gold transition-colors">
-                care@vamikabhargavi.com
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-              <span>+91 99999 88888</span>
+        <div className="py-5 md:py-0">
+          <button 
+            type="button"
+            onClick={() => toggleSection('support')}
+            className="flex items-center justify-between w-full md:cursor-default"
+          >
+            <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
+              Boutique Support
+            </h4>
+            <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'support' ? 'rotate-180' : ''}`} />
+          </button>
+
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'support' ? 'max-h-32 mt-4' : 'max-h-0'}`}>
+            <div className="space-y-3 text-xs text-stone-600 font-sans w-full text-left">
+              <div className="flex items-center justify-start gap-2">
+                <Mail className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
+                <a href="mailto:care@vamikabhargavi.com" className="hover:text-brand-gold transition-colors">
+                  care@vamikabhargavi.com
+                </a>
+              </div>
+              <div className="flex items-center justify-start gap-2">
+                <Phone className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
+                <span>+91 99999 88888</span>
+              </div>
             </div>
           </div>
         </div>

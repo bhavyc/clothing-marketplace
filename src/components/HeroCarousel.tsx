@@ -79,8 +79,8 @@ export default function HeroCarousel() {
               className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 animate-fade-in-slide"
             >
               {/* Slide Text Content */}
-              <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-left order-2 lg:order-1">
-                <div className="inline-flex items-center space-x-2 bg-white border border-[#E8DFC8]/80 rounded-full px-4 py-1.5 text-[9px] font-sans font-bold uppercase tracking-widest text-brand-gold shadow-2xs">
+              <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start">
+                <div className="inline-flex items-center justify-center space-x-2 bg-white border border-[#E8DFC8]/80 rounded-full px-4 py-1.5 text-[9px] font-sans font-bold uppercase tracking-widest text-brand-gold shadow-2xs">
                   <Star className="h-3 w-3 fill-brand-gold text-brand-gold animate-pulse" />
                   <span>{slide.subtitle}</span>
                 </div>
@@ -94,17 +94,17 @@ export default function HeroCarousel() {
                   {slide.description}
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
+                <div className="flex flex-col w-full sm:w-auto sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
                   <Link
                     href={slide.link}
-                    className="inline-flex items-center justify-center bg-brand-charcoal text-brand-cream px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-brand-charcoal/90 transition-all shadow-md hover:shadow-lg group cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center bg-brand-charcoal text-brand-cream px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-brand-charcoal/90 transition-all shadow-md hover:shadow-lg group cursor-pointer"
                   >
                     {slide.buttonText}
                     <ArrowRight className="ml-2.5 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
                   <Link
                     href="/shop"
-                    className="inline-flex items-center justify-center bg-transparent border border-[#C5B495] text-brand-gold px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-white transition-all shadow-2xs hover:shadow-xs cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center bg-transparent border border-[#C5B495] text-brand-gold px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-white transition-all shadow-2xs hover:shadow-xs cursor-pointer"
                   >
                     View All Silhouettes
                   </Link>
@@ -139,14 +139,14 @@ export default function HeroCarousel() {
       {/* Manual Slide Navigation Chevrons */}
       <button
         onClick={handlePrev}
-        className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 rounded-full bg-white/75 hover:bg-white border border-[#E8DFC8]/60 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold transition-all cursor-pointer flex items-center justify-center shadow-xs z-20"
+        className="hidden sm:flex absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 rounded-full bg-white/75 hover:bg-white border border-[#E8DFC8]/60 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold transition-all cursor-pointer items-center justify-center shadow-xs z-20"
         aria-label="Previous Slide"
       >
         <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
       </button>
       <button
         onClick={handleNext}
-        className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 rounded-full bg-white/75 hover:bg-white border border-[#E8DFC8]/60 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold transition-all cursor-pointer flex items-center justify-center shadow-xs z-20"
+        className="hidden sm:flex absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 rounded-full bg-white/75 hover:bg-white border border-[#E8DFC8]/60 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold transition-all cursor-pointer items-center justify-center shadow-xs z-20"
         aria-label="Next Slide"
       >
         <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
