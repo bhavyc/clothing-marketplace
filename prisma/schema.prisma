@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,132 +8,131 @@ datasource db {
 }
 
 model User {
-  id                String         @id @default(uuid())
-  name              String?
-  email             String         @unique
-  password          String
-  role              String         @default("CUSTOMER") // "CUSTOMER", "SELLER", "ADMIN"
-  resetOtp          String?
-  resetOtpExpires   DateTime?
-  walletBalance     Float          @default(0.0)
-  phone             String?        @unique
-  optInWhatsApp     Boolean        @default(false)
-  optInDate         DateTime?
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  sellerProfile     SellerProfile?
-  orders            Order[]
-  couponSentList    CouponSent[]
-  cart              Cart?
+  id              String         @id @default(uuid())
+  name            String?
+  email           String         @unique
+  password        String
+  role            String         @default("CUSTOMER")
+  resetOtp        String?
+  resetOtpExpires DateTime?
+  walletBalance   Float          @default(0.0)
+  phone           String?        @unique
+  optInWhatsApp   Boolean        @default(false)
+  optInDate       DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  cart            Cart?
+  couponSentList  CouponSent[]
+  orders          Order[]
+  sellerProfile   SellerProfile?
 }
 
 model Cart {
   id        String     @id @default(uuid())
   userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
 }
 
 model CartItem {
   id              String         @id @default(uuid())
   cartId          String
-  cart            Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
   variantId       String
-  variant         ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   quantity        Int
-  selectedOptions String?        // JSON string of chosen options
+  selectedOptions String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  cart            Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant         ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
 }
 
-
 model SellerProfile {
-  id           String    @id @default(uuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  shopName     String
-  description  String?
-  logoUrl      String?
-  bannerUrl    String?
-  isApproved   Boolean   @default(true)
-  bankName     String?
-  bankAccount  String?
-  bankIfsc     String?
-  products     Product[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  shopName    String
+  description String?
+  logoUrl     String?
+  bannerUrl   String?
+  isApproved  Boolean   @default(true)
+  bankName    String?
+  bankAccount String?
+  bankIfsc    String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  products    Product[]
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Product {
-  id              String           @id @default(uuid())
-  title           String
-  description     String
-  images          String           // Stored as JSON string of image URLs
-  category        String           // e.g., "Pheran Set", "Saree", "Kurta"
-  collection      String?          // e.g., "Bestsellers", "New Arrivals"
-  fabricDetails   String?
+  id               String           @id @default(uuid())
+  title            String
+  description      String
+  images           String
+  category         String
+  collection       String?
+  fabricDetails    String?
   careInstructions String?
-  deliveryTimeline String          @default("10-15 Days")
-  isSet           Boolean          @default(false)
-  tier            String           @default("LUXE") // "LUXE" or "INDI"
-  topLength       String?
-  pantLength      String?
-  sleeveLength    String?
-  isBestseller    Boolean          @default(false) // Manual override by Admin
-  discountPercent Float            @default(0.0)
-  sizeChartType   String           @default("STANDARD") // "STANDARD", "IMAGE", "CUSTOM"
-  sizeChartData   String?          // Image URL if sizeChartType is "IMAGE", JSON measurements if "CUSTOM"
-  sellerId        String
-  seller          SellerProfile    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
-  variants        ProductVariant[]
-  options         ProductOption[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  deliveryTimeline String           @default("10-15 Days")
+  isSet            Boolean          @default(false)
+  tier             String           @default("LUXE")
+  topLength        String?
+  pantLength       String?
+  sleeveLength     String?
+  isBestseller     Boolean          @default(false)
+  discountPercent  Float            @default(0.0)
+  sizeChartType    String           @default("STANDARD")
+  sizeChartData    String?
+  sellerId         String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  seller           SellerProfile    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  options          ProductOption[]
+  variants         ProductVariant[]
 }
 
 model ProductVariant {
-  id          String      @id @default(uuid())
-  productId   String
-  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  topSize     String?     // S, M, L, XL, Custom
-  bottomSize  String?     // S, M, L, XL, Custom (For coordinate sets)
-  price       Float       // Price for this specific size variant
-  stock       Int         @default(0)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
-  cartItems   CartItem[]
+  id         String      @id @default(uuid())
+  productId  String
+  topSize    String?
+  bottomSize String?
+  price      Float
+  stock      Int         @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductOption {
   id              String   @id @default(uuid())
   productId       String
-  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  optionName      String   // e.g., "Dupatta"
-  optionValue     String   // e.g., "With Dupatta", "Without Dupatta"
-  priceAdjustment Float    @default(0.0) // Dynamic price change, e.g. +1500.00
+  optionName      String
+  optionValue     String
+  priceAdjustment Float    @default(0.0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Coupon {
-  id              String   @id @default(uuid())
-  code            String   @unique // e.g. "PAY5"
+  id              String       @id @default(uuid())
+  code            String       @unique
   description     String?
-  discountPercent Float    @default(0.0) // e.g. 5.0 for 5%
-  discountAmount  Float    @default(0.0)
-  minOrderValue   Float    @default(0.0)
-  isPrepaidOnly   Boolean  @default(false)
-  isActive        Boolean  @default(true)
+  discountPercent Float        @default(0.0)
+  discountAmount  Float        @default(0.0)
+  minOrderValue   Float        @default(0.0)
+  isPrepaidOnly   Boolean      @default(false)
+  isActive        Boolean      @default(true)
   startTime       DateTime?
   endTime         DateTime?
-  usageLimit      Int      @default(999999)
-  currentUsage    Int      @default(0)
-  triggerFreeGift Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  usageLimit      Int          @default(999999)
+  currentUsage    Int          @default(0)
+  triggerFreeGift Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
   couponSentList  CouponSent[]
 }
 
@@ -151,9 +147,8 @@ model GiftCard {
 
 model Order {
   id              String      @id @default(uuid())
-  orderNumber     String      @unique // e.g. "KSH-10001"
+  orderNumber     String      @unique
   userId          String?
-  user            User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   customerName    String
   customerEmail   String
   customerPhone   String
@@ -164,10 +159,10 @@ model Order {
   subtotal        Float
   discountAmount  Float       @default(0.0)
   totalAmount     Float
-  paymentType     String      @default("PREPAID") // "PREPAID", "COD"
-  paymentStatus   String      @default("PENDING") // "PENDING", "PAID", "FAILED"
-  paymentId       String?     // Gateway Transaction ID
-  status          String      @default("PLACED") // "PLACED", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"
+  paymentType     String      @default("PREPAID")
+  paymentStatus   String      @default("PENDING")
+  paymentId       String?
+  status          String      @default("PLACED")
   trackingCompany String?
   trackingNumber  String?
   shippedAt       DateTime?
@@ -175,25 +170,26 @@ model Order {
   walletPaid      Float       @default(0.0)
   couponUsed      String?
   hasFreeGift     Boolean     @default(false)
-  items           OrderItem[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  user            User?       @relation(fields: [userId], references: [id])
+  items           OrderItem[]
 }
 
 model OrderItem {
   id              String         @id @default(uuid())
   orderId         String
-  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   variantId       String
-  variant         ProductVariant @relation(fields: [variantId], references: [id])
   quantity        Int
-  priceAtPurchase Float          // Exact price paid for this item
-  selectedOptions String?        // JSON string describing chosen options, e.g. "Dupatta: With Dupatta (+1500)"
-  returnStatus    String         @default("NONE") // "NONE", "RETURN_REQUESTED", "RETURN_APPROVED", "RETURNED", "RETURN_REJECTED"
+  priceAtPurchase Float
+  selectedOptions String?
+  returnStatus    String         @default("NONE")
   returnQuantity  Int            @default(0)
   returnReason    String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant         ProductVariant @relation(fields: [variantId], references: [id])
 }
 
 model Campaign {
@@ -202,9 +198,9 @@ model Campaign {
   bannerUrl    String
   captionText  String
   couponCode   String
-  segmentTag   String       @default("ALL") // "ALL", "VIP", etc.
+  segmentTag   String       @default("ALL")
   templateName String?
-  status       String       @default("PENDING") // "PENDING", "APPROVED", "REJECTED"
+  status       String       @default("PENDING")
   rejectReason String?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
@@ -214,19 +210,19 @@ model Campaign {
 model MessageLog {
   id         String   @id @default(uuid())
   campaignId String
-  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   userId     String
-  status     String   @default("SENT") // "SENT", "DELIVERED", "READ", "FAILED"
+  status     String   @default("SENT")
   updatedAt  DateTime @updatedAt
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
 
 model CouponSent {
   id            String   @id @default(uuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   couponId      String
-  coupon        Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
   sentAt        DateTime @default(now())
   used          Boolean  @default(false)
   reminderCount Int      @default(0)
+  coupon        Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

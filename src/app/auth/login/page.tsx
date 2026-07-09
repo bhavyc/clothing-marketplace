@@ -162,44 +162,14 @@ function SignInForm() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-brand-cream-dark px-6 py-10 shadow-lg border border-[#F0E6D2] rounded-md sm:rounded-lg sm:px-12">
           
-          {/* Login Method Toggle Tab */}
+          {/* Login Method Header */}
           <div className="flex justify-center mb-8 border-b border-[#E8DFC8]">
-            <button
-              type="button"
-              onClick={() => {
-                setLoginMethod("PHONE");
-                setError(null);
-                setSuccess(null);
-              }}
-              className={`flex-1 pb-3 text-center text-xs font-sans font-bold uppercase tracking-wider transition-all border-b-2 ${
-                loginMethod === "PHONE"
-                  ? "border-brand-gold text-brand-charcoal"
-                  : "border-transparent text-gray-400 hover:text-brand-charcoal"
-              }`}
-            >
+            <div className="flex-1 pb-3 text-center text-xs font-sans font-bold uppercase tracking-wider border-b-2 border-brand-gold text-brand-charcoal">
               <span className="flex items-center justify-center gap-1.5">
                 <Phone className="h-3.5 w-3.5" />
                 Phone OTP
               </span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setLoginMethod("EMAIL");
-                setError(null);
-                setSuccess(null);
-              }}
-              className={`flex-1 pb-3 text-center text-xs font-sans font-bold uppercase tracking-wider transition-all border-b-2 ${
-                loginMethod === "EMAIL"
-                  ? "border-brand-gold text-brand-charcoal"
-                  : "border-transparent text-gray-400 hover:text-brand-charcoal"
-              }`}
-            >
-              <span className="flex items-center justify-center gap-1.5">
-                <Mail className="h-3.5 w-3.5" />
-                Email / Pass
-              </span>
-            </button>
+            </div>
           </div>
 
           {error && (
