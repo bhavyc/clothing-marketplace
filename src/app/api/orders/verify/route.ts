@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
       console.warn(`Signature verification failed for order ${orderNumber}`);
       
       // Edge Case: Mark order failed and rollback stock if signature fails
-      await prisma.$transaction(async (tx) => {
+      await prisma.$transaction(
+        async (tx) => {
         await tx.order.update({
           where: { id: order.id },
           data: {
@@ -89,6 +90,10 @@ export async function POST(req: NextRequest) {
             });
           }
         }
+      },
+      {
+        maxWait: 15000,
+        timeout: 30000,
       });
 
       return NextResponse.json(

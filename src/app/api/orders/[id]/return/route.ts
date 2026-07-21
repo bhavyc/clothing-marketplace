@@ -100,7 +100,8 @@ export async function POST(
     }
 
     // 7. Perform transaction to update status
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(
+      async (tx) => {
       // Update each item status
       for (const update of updates) {
         await tx.orderItem.update({
@@ -120,6 +121,10 @@ export async function POST(
           status: "RETURN_REQUESTED",
         },
       });
+    },
+    {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     return NextResponse.json({

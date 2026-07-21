@@ -78,7 +78,8 @@ export async function POST(req: NextRequest) {
 
         if (order) {
           console.log(`Webhook updating failed order ${order.orderNumber} to FAILED/CANCELLED.`);
-          await prisma.$transaction(async (tx) => {
+          await prisma.$transaction(
+            async (tx) => {
             await tx.order.update({
               where: { id: order.id },
               data: {
@@ -123,6 +124,10 @@ export async function POST(req: NextRequest) {
                 });
               }
             }
+          },
+          {
+            maxWait: 15000,
+            timeout: 30000,
           });
         }
       }

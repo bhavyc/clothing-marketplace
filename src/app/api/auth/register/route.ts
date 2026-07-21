@@ -31,7 +31,8 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
       const user = await tx.user.create({
         data: {
           name,
@@ -56,6 +57,10 @@ export async function POST(req: Request) {
       }
 
       return user;
+    },
+    {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     const { password: _, ...userWithoutPassword } = result;

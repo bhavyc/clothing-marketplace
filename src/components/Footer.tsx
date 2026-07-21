@@ -5,7 +5,7 @@ import { useState } from "react";
 import { X, Mail, Phone, Clock, ChevronDown } from "lucide-react";
 
 export default function Footer() {
-  const [activeModal, setActiveModal] = useState<"care" | "shipping" | "tailoring" | null>(null);
+  const [activeModal, setActiveModal] = useState<"shipping" | "tailoring" | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
@@ -22,13 +22,9 @@ export default function Footer() {
             vamika <span className="font-serif italic text-brand-gold font-normal">&</span> bhargavi
           </h3>
           <p className="font-sans text-xs text-stone-500 leading-relaxed uppercase tracking-wider mb-5">
-            Exquisite handmade apparel, coord sets and traditional silhouettes tailored to perfection.
+            Curated with love. Crafted with purpose. Designed to become part of your story.
           </p>
-          <div className="flex items-center space-x-2.5">
-            <span className="text-[9px] font-sans font-bold uppercase tracking-[0.12em] text-brand-gold border border-brand-gold/30 px-2.5 py-1 rounded-xs bg-white shadow-3xs">
-              Razorpay Secure Checkout
-            </span>
-          </div>
+
         </div>
 
         {/* Collections */}
@@ -85,11 +81,7 @@ export default function Footer() {
                   Custom Tailoring
                 </button>
               </li>
-              <li>
-                <button type="button" onClick={() => setActiveModal("care")} className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans">
-                  Care Instructions
-                </button>
-              </li>
+
               <li>
                 <button type="button" onClick={() => setActiveModal("shipping")} className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans">
                   Shipping & Returns
@@ -140,7 +132,7 @@ export default function Footer() {
           <div className="bg-[#FDFBF7] border border-[#E8DFC8] max-w-md w-full rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-[#FAF5EC] flex justify-between items-center bg-[#FAF6F0]">
               <h3 className="font-serif text-md font-semibold text-brand-charcoal lowercase tracking-wider">
-                {activeModal === "care" && "Fabric Care Instructions"}
+
                 {activeModal === "shipping" && "Shipping & Delivery Policy"}
                 {activeModal === "tailoring" && "Custom Sizing & Alterations"}
               </h3>
@@ -153,22 +145,7 @@ export default function Footer() {
               </button>
             </div>
             <div className="p-6 overflow-y-auto font-sans text-xs text-stone-600 space-y-5 leading-relaxed">
-              {activeModal === "care" && (
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">Velvets & Heavy Silks</h4>
-                    <p className="mt-1">Dry clean only. Do not iron directly on velvet or silk fibers; use steam or iron on the reverse side under a protective press cloth.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">Artisanal Loom Linens & Cottons</h4>
-                    <p className="mt-1">Hand wash gently in cold water with mild detergent. Do not wring or tumble dry. Dry flat in shade to preserve colors. Warm iron on reverse.</p>
-                  </div>
-                  <div>
-                    <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">Zardozi & Aari Embroidery</h4>
-                    <p className="mt-1">Garments with heavy hand embroidery should always be professionally dry cleaned. Store flat wrapped in muslin cloth to prevent metallic tarnishing.</p>
-                  </div>
-                </div>
-              )}
+
               {activeModal === "shipping" && (
                 <div className="space-y-4">
                   <div>

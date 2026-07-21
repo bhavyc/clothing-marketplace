@@ -17,8 +17,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Vamika & Bhargavi | Premium Designer Boutique",
-  description: "Exquisite handmade clothing, sets and designer wear.",
+  title: "Vamika Bhargavi | Premium Designer Boutique",
+  description: "Curated with love. Crafted with purpose. Designed to become part of your story. Explore our exquisite mother-daughter designer wear collections.",
 };
 
 export default function RootLayout({

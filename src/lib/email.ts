@@ -94,9 +94,12 @@ export async function sendOrderConfirmationEmail(orderIdOrNumber: string) {
           </h2>
           
           <div style="background-color: #FFFFFF; padding: 30px; border: 1px solid #FAF6F0; border-radius: 4px;">
-            <h3 style="font-family: sans-serif; font-size: 16px; font-weight: bold; color: #1A1A1A; text-transform: uppercase; letter-spacing: 0.1em; text-align: center; margin-top: 0; margin-bottom: 20px;">
+            <h3 style="font-family: sans-serif; font-size: 16px; font-weight: bold; color: #1A1A1A; text-transform: uppercase; letter-spacing: 0.1em; text-align: center; margin-top: 0; margin-bottom: 8px;">
               Order Confirmed
             </h3>
+            <div style="font-family: sans-serif; font-size: 12px; color: #888888; text-align: center; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em;">
+              Order ID: <strong style="color: #1A1A1A;">${order.orderNumber}</strong>
+            </div>
             <p style="font-family: sans-serif; font-size: 13px; color: #4A4A4A; line-height: 1.6; text-align: center; margin-bottom: 30px;">
               Thank you for shopping with us, <strong>${order.customerName}</strong>. Your order has been successfully placed. Below are your order summary and delivery details.
             </p>

@@ -49,7 +49,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Process order inside a single database transaction
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(
+      async (tx) => {
       // 1. Calculate items subtotal and verify variants exist
       let subtotal = 0;
       const orderItemsToCreate = [];
@@ -237,6 +238,10 @@ export async function POST(req: NextRequest) {
         totalAmount: newOrder.totalAmount,
         walletPaid: newOrder.walletPaid,
       };
+    },
+    {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     // 5. Initiate external Razorpay order creation only if there is a remaining totalAmount > 0
@@ -248,7 +253,8 @@ export async function POST(req: NextRequest) {
       } catch (error: any) {
         console.error("Razorpay order creation failed. Rolling back order in database...", error);
         // Rollback: delete order, restore variant stocks, and refund wallet if used
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(
+          async (tx) => {
           const order = await tx.order.findUnique({
             where: { orderNumber: result.orderNumber },
             include: { items: true },
@@ -289,6 +295,10 @@ export async function POST(req: NextRequest) {
               where: { id: order.id },
             });
           }
+        },
+        {
+          maxWait: 15000,
+          timeout: 30000,
         });
         return NextResponse.json(
           { error: "Payment gateway initiation failed. Please try again." },

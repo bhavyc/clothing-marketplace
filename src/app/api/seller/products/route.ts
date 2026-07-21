@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Run transaction to create product, variants, and options
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(
+      async (tx) => {
       const product = await tx.product.create({
         data: {
           title,
@@ -139,6 +140,10 @@ export async function POST(req: NextRequest) {
       }
 
       return product;
+    },
+    {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     return NextResponse.json({ success: true, product: result });
@@ -213,7 +218,8 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const updatedProduct = await prisma.$transaction(async (tx) => {
+    const updatedProduct = await prisma.$transaction(
+      async (tx) => {
       // 1. Update discount percent if provided
       if (parsedDiscount !== undefined) {
         await tx.product.update({
@@ -248,6 +254,10 @@ export async function PUT(req: NextRequest) {
           options: true,
         },
       });
+    },
+    {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     return NextResponse.json({ success: true, product: updatedProduct });

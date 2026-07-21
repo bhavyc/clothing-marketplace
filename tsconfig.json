@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "clean.ts", "clean2.ts", "clean.js", "count.js", "cloudinary-test.js", "test_pg_direct.js"]
 }

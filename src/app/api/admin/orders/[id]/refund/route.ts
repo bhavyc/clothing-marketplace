@@ -95,7 +95,8 @@ export async function POST(
     }
 
     // 4. Process each item inside a transaction
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(
+      async (tx) => {
       let totalRefundAmount = 0;
 
       for (const processItem of itemsToRefund) {
@@ -210,6 +211,10 @@ export async function POST(
           paymentStatus: newPaymentStatus,
         },
       });
+    },
+    {
+      maxWait: 15000,
+      timeout: 30000,
     });
 
     return NextResponse.json({

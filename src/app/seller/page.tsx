@@ -974,9 +974,6 @@ export default function SellerDashboard() {
                 <p className="text-[11px] text-gray-600 uppercase tracking-wide leading-relaxed">
                   * All items will be displayed with <strong className="text-emerald-700 font-bold">Free Delivery</strong> to customers nationwide. Please bundle average shipping costs directly into your product pricing.
                 </p>
-                <p className="text-[11px] text-gray-600 uppercase tracking-wide leading-relaxed">
-                  * Payouts are calculated after a 10% platform commission deduction. Settlements are cleared 7 days following order delivery.
-                </p>
               </div>
             </div>
 
