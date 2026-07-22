@@ -240,6 +240,20 @@ function CheckoutContent() {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setFormError("Please enter a valid email address.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const isPlaceholderEmail = email.startsWith("user-") && email.endsWith("@boutique.com");
+    if (isPlaceholderEmail) {
+      setFormError("Please enter a valid personal email address for order notifications.");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const orderData = {
         customerName: name,
@@ -432,7 +446,7 @@ function CheckoutContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <label htmlFor="fullName" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                      Full Name
+                      Full Name <span className="text-brand-gold ml-0.5">*</span>
                     </label>
                     <input
                       id="fullName"
@@ -447,7 +461,7 @@ function CheckoutContent() {
 
                   <div>
                     <label htmlFor="email" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                      Email Address
+                      Email Address <span className="text-brand-gold ml-0.5">*</span>
                     </label>
                     <input
                       id="email"
@@ -462,7 +476,7 @@ function CheckoutContent() {
 
                   <div>
                     <label htmlFor="phone" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                      Phone Number
+                      Phone Number <span className="text-brand-gold ml-0.5">*</span>
                     </label>
                     <input
                       id="phone"
@@ -477,7 +491,7 @@ function CheckoutContent() {
 
                   <div className="sm:col-span-2">
                     <label htmlFor="address" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                      Street Address
+                      Street Address <span className="text-brand-gold ml-0.5">*</span>
                     </label>
                     <textarea
                       id="address"
@@ -492,7 +506,7 @@ function CheckoutContent() {
 
                   <div>
                     <label htmlFor="city" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                      City
+                      City <span className="text-brand-gold ml-0.5">*</span>
                     </label>
                     <input
                       id="city"
@@ -509,7 +523,7 @@ function CheckoutContent() {
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label htmlFor="state" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                          State
+                          State <span className="text-brand-gold ml-0.5">*</span>
                         </label>
                         <input
                           id="state"
@@ -523,7 +537,7 @@ function CheckoutContent() {
                       </div>
                       <div>
                         <label htmlFor="pincode" className="block text-[10px] font-sans font-bold uppercase tracking-widest text-brand-charcoal">
-                          Pincode
+                          Pincode <span className="text-brand-gold ml-0.5">*</span>
                         </label>
                         <input
                           id="pincode"

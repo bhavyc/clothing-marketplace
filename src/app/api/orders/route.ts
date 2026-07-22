@@ -48,6 +48,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isPlaceholderEmail = customerEmail.startsWith("user-") && customerEmail.endsWith("@boutique.com");
+    if (isPlaceholderEmail || !emailRegex.test(customerEmail)) {
+      return NextResponse.json(
+        { error: "A valid personal email address is required to place an order." },
+        { status: 400 }
+      );
+    }
+
     // Process order inside a single database transaction
     const result = await prisma.$transaction(
       async (tx) => {

@@ -108,13 +108,13 @@ export default function Footer() {
             <div className="space-y-3 text-xs text-stone-600 font-sans w-full text-left">
               <div className="flex items-center justify-start gap-2">
                 <Mail className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-                <a href="mailto:care@vamikabhargavi.com" className="hover:text-brand-gold transition-colors">
-                  care@vamikabhargavi.com
+                <a href="mailto:bhargavivamika@gmail.com" className="hover:text-brand-gold transition-colors">
+                  bhargavivamika@gmail.com
                 </a>
               </div>
               <div className="flex items-center justify-start gap-2">
                 <Phone className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-                <span>+91 99999 88888</span>
+                <span>+91 98739 59531</span>
               </div>
             </div>
           </div>
@@ -174,7 +174,7 @@ export default function Footer() {
                   </div>
                   <div>
                     <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">How to alter?</h4>
-                    <p className="mt-1">For post-delivery tailoring alterations, reach out to our WhatsApp customer concierge or email us at <strong className="text-brand-charcoal">care@vamikabhargavi.com</strong>. We will arrange collection and alteration.</p>
+                    <p className="mt-1">For post-delivery tailoring alterations, reach out to our WhatsApp customer concierge or email us at <strong className="text-brand-charcoal">bhargavivamika@gmail.com</strong>. We will arrange collection and alteration.</p>
                   </div>
                 </div>
               )}

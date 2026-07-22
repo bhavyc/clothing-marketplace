@@ -78,8 +78,7 @@ export function verifyRazorpaySignature(
   razorpayPaymentId: string,
   razorpaySignature: string
 ): boolean {
-  if (isMockMode() || process.env.NODE_ENV !== "production") {
-    // In mock/dev mode, allow payment validation if the signature matches a mock prefix
+  if (isMockMode()) {
     return (
       razorpaySignature === `mock_sig_${razorpayOrderId}_${razorpayPaymentId}` ||
       razorpaySignature.startsWith("mock_sig_")
@@ -92,7 +91,16 @@ export function verifyRazorpaySignature(
     .update(text)
     .digest("hex");
 
-  return generatedSignature === razorpaySignature;
+  const isRealValid = generatedSignature === razorpaySignature;
+
+  if (process.env.NODE_ENV !== "production" && !isRealValid) {
+    return (
+      razorpaySignature === `mock_sig_${razorpayOrderId}_${razorpayPaymentId}` ||
+      razorpaySignature.startsWith("mock_sig_")
+    );
+  }
+
+  return isRealValid;
 }
 
 /**
