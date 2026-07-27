@@ -118,7 +118,7 @@ export default function PrivacyPolicyPage() {
               If you have any questions or feedback regarding this Privacy Policy, please contact our support team:
             </p>
             <div className="bg-[#FAF8F5] border border-[#E8DFC8] rounded-md p-4 mt-2 space-y-1 font-sans text-xs">
-              <p><strong className="text-brand-charcoal">Email:</strong> bhargavivamika@gmail.com</p>
+              <p><strong className="text-brand-charcoal">Email:</strong> vamikabhargavi@gmail.com</p>
               <p><strong className="text-brand-charcoal">Phone:</strong> +91 98739 59531</p>
             </div>
           </section>

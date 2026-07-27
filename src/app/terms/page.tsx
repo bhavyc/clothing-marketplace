@@ -99,7 +99,7 @@ export default function TermsPage() {
               If you require clarification on any of these Terms and Conditions, please reach out to our administration desk:
             </p>
             <div className="bg-[#FAF8F5] border border-[#E8DFC8] rounded-md p-4 mt-2 space-y-1 font-sans text-xs">
-              <p><strong className="text-brand-charcoal">Email:</strong> bhargavivamika@gmail.com</p>
+              <p><strong className="text-brand-charcoal">Email:</strong> vamikabhargavi@gmail.com</p>
               <p><strong className="text-brand-charcoal">Phone:</strong> +91 98739 59531</p>
             </div>
           </section>
