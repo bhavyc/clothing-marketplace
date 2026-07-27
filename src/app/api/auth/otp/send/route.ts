@@ -92,7 +92,7 @@ console.log("Token length:", token?.length)
         }
 
         // Step 2: Try sending Template message
-        const templateToTry = templateNameToUse || "verification_code";
+        const templateToTry = templateNameToUse || "verificartion_code";
         console.log(`Attempting to send OTP template "${templateToTry}" to ${formattedPhone}`);
         
         const templatePayload = {
