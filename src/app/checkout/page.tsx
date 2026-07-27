@@ -55,10 +55,10 @@ function CheckoutContent() {
   }, [status]);
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && items.length === 0) {
       refreshCart();
     }
-  }, [status, refreshCart]);
+  }, [status, items.length, refreshCart]);
 
     // Guard route & Prefill fields
     useEffect(() => {

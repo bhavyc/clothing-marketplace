@@ -97,13 +97,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           const res = await fetch("/api/cart");
           if (res.ok) {
             const data = await res.json();
+            
+            // Read latest guest cart directly from localStorage to avoid stale closures
+            const storedCart = localStorage.getItem("boutique_cart");
+            let localItems = [];
+            if (storedCart) {
+              try {
+                localItems = JSON.parse(storedCart);
+              } catch (e) {
+                // ignore
+              }
+            }
+
             if (data.items && data.items.length > 0) {
               setItems(data.items);
-            } else if (items.length > 0) {
+            } else if (localItems.length > 0) {
+              setItems(localItems);
               await fetch("/api/cart", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items }),
+                body: JSON.stringify({ items: localItems }),
               });
             }
           }
