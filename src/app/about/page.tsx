@@ -24,35 +24,51 @@ export default async function AboutPage() {
         </p>
       </section>
 
-      {/* Narrative Section - Centered Text Only */}
-      <section className="py-20 bg-brand-cream border-t border-b border-[#F0E6D2]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-12 text-center space-y-8">
-          {/* Text side */}
-          <div className="space-y-8">
-            <div className="space-y-3">
-              <span className="text-[10px] text-brand-gold uppercase tracking-[0.25em] font-bold">our story</span>
-              <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold tracking-wide lowercase">
-                born of <span className="italic font-normal text-brand-gold">love & legacy</span>
-              </h2>
-            </div>
-            <div className="w-12 h-0.5 bg-brand-gold mx-auto" />
-            <div className="space-y-6 text-gray-600 text-sm sm:text-base leading-relaxed font-light">
-              <p>
-                Founded by Bhargavi and inspired by her daughter Vamika, our brand is a reflection of love, legacy, and individuality. Every collection is thoughtfully curated to bring together the richness of Indian craftsmanship with a modern, effortless aesthetic.
-              </p>
-              <p>
-                As a mother-daughter brand, our vision extends beyond creating beautiful garments. We aspire to build a label that is cherished across generations—a name associated with authenticity, craftsmanship, and thoughtful design.
-              </p>
-            </div>
-            <div className="pt-4 flex justify-center">
-              <Link
-                href="/shop"
-                className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-1 hover:border-brand-gold"
-              >
-                Explore the collections
-                <ArrowRight className="ml-2 h-3.5 w-3.5" />
-              </Link>
-            </div>
+      {/* Narrative Section - Premium Storytelling Showcase */}
+      <section className="py-24 bg-[#FAF8F5] border-t border-b border-[#F0E6D2] relative overflow-hidden">
+        {/* Soft luxury background details */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#C5A880_1px,transparent_1px)] [background-size:24px_24px]" />
+        
+        <div className="max-w-4xl mx-auto px-6 relative z-10 text-center">
+          {/* Brand Emblem */}
+          <div className="flex justify-center items-center gap-2 mb-6">
+            <div className="h-[1px] w-8 bg-gradient-to-r from-transparent to-brand-gold" />
+            <span className="text-brand-gold text-lg font-serif italic">§</span>
+            <div className="h-[1px] w-8 bg-gradient-to-l from-transparent to-brand-gold" />
+          </div>
+
+          <div className="space-y-4">
+            <span className="text-[10px] tracking-[0.35em] text-brand-gold uppercase font-sans font-bold block">
+              Our Story
+            </span>
+            <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl text-brand-charcoal font-medium leading-tight">
+              born of <span className="font-normal italic text-brand-gold">love & legacy</span>
+            </h2>
+          </div>
+
+          <div className="w-16 h-px bg-brand-gold/60 mx-auto my-8" />
+
+          {/* Luxury text panel */}
+          <div className="max-w-2xl mx-auto space-y-8 text-stone-700 font-serif text-sm sm:text-base md:text-lg leading-relaxed font-light italic">
+            <p className="first-letter:text-3xl first-letter:font-serif first-letter:font-bold first-letter:text-brand-gold first-letter:float-left first-letter:mr-2 first-letter:leading-none">
+              Founded by Bhargavi and inspired by her daughter Vamika, our brand is a reflection of love, legacy, and individuality. Every collection is thoughtfully curated to bring together the richness of Indian craftsmanship with a modern, effortless aesthetic.
+            </p>
+            <p>
+              As a mother-daughter brand, our vision extends beyond creating beautiful garments. We aspire to build a label that is cherished across generations—a name associated with authenticity, craftsmanship, and thoughtful design.
+            </p>
+          </div>
+
+          {/* Decorative tail divider */}
+          <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent mx-auto my-8" />
+
+          <div className="pt-2 flex justify-center">
+            <Link
+              href="/shop"
+              className="group inline-flex items-center text-xs font-bold uppercase tracking-[0.2em] text-brand-gold hover:text-brand-gold-light transition-all duration-300 hover:tracking-[0.25em] border-b border-brand-gold/30 pb-1 hover:border-brand-gold"
+            >
+              Explore the collections
+              <ArrowRight className="ml-2 h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
           </div>
         </div>
       </section>
