@@ -368,7 +368,7 @@ export default async function Home() {
             </p>
             <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row gap-4">
               <a
-                href="https://wa.me/919999999999?text=Hi!%20I%27d%20like%20to%20discuss%20a%20custom%20styling%20request%20with%20Vamika%20%26%20Bhargavi."
+                href="https://wa.me/919873959531?text=Hi!%20I%27d%20like%20to%20discuss%20a%20custom%20styling%20request%20with%20Vamika%20%26%20Bhargavi."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center bg-brand-gold text-brand-charcoal px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-brand-gold-light transition-all shadow-md cursor-pointer"

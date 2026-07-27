@@ -195,7 +195,7 @@ export default function ProductDetailClient({ product }: ProductDetailProps) {
     
     const message = `Hi! I am interested in customizing the following outfit from your boutique:\n\n*Product:* ${product.title}\n*Code/Link:* ${origin}/shop/${product.id}\n${sizeDetails.length > 0 ? `*Size Request:* ${sizeDetails.join(", ")}\n` : ""}${optionsText ? `*Options:* ${optionsText}\n` : ""}*Custom Styling Request:* (e.g. sleeves length adjustment, color changes)`;
     
-    return `https://wa.me/919999999999?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/919873959531?text=${encodeURIComponent(message)}`;
   };
 
   return (
