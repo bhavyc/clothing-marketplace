@@ -12,7 +12,7 @@ export default async function AboutPage() {
           A Mother-Daughter Legacy
         </span>
         <h1 className="font-serif text-4xl sm:text-6xl text-brand-charcoal font-semibold tracking-normal leading-tight">
-          About <span className="font-normal italic text-brand-gold">Vamika Bhargavi</span>
+          About <span className="font-normal italic text-brand-gold">Vamika &Bhargavi</span>
         </h1>
         <div className="flex items-center justify-center gap-4 my-6">
           <div className="w-16 h-px bg-gradient-to-r from-transparent to-brand-gold/60" />
@@ -24,28 +24,18 @@ export default async function AboutPage() {
         </p>
       </section>
 
-      {/* Narrative Section - Two Columns */}
+      {/* Narrative Section - Centered Text Only */}
       <section className="py-20 bg-brand-cream border-t border-b border-[#F0E6D2]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-12 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Image side */}
-          <div className="relative aspect-3/4 max-w-lg mx-auto w-full rounded-sm overflow-hidden border border-[#E8DFC8] shadow-md group">
-            <img
-              src="/about_boutique_interior.png"
-              alt="Vamika & Bhargavi Curated Space"
-              className="w-full h-full object-cover transform scale-100 group-hover:scale-102 transition-transform duration-1000 ease-out"
-            />
-            <div className="absolute inset-0 bg-brand-charcoal/5" />
-          </div>
-
+        <div className="max-w-3xl mx-auto px-4 sm:px-12 text-center space-y-8">
           {/* Text side */}
-          <div className="space-y-8 text-left">
+          <div className="space-y-8">
             <div className="space-y-3">
               <span className="text-[10px] text-brand-gold uppercase tracking-[0.25em] font-bold">our story</span>
               <h2 className="font-serif text-3xl sm:text-4xl text-brand-charcoal font-semibold tracking-wide lowercase">
                 born of <span className="italic font-normal text-brand-gold">love & legacy</span>
               </h2>
             </div>
-            <div className="w-12 h-0.5 bg-brand-gold" />
+            <div className="w-12 h-0.5 bg-brand-gold mx-auto" />
             <div className="space-y-6 text-gray-600 text-sm sm:text-base leading-relaxed font-light">
               <p>
                 Founded by Bhargavi and inspired by her daughter Vamika, our brand is a reflection of love, legacy, and individuality. Every collection is thoughtfully curated to bring together the richness of Indian craftsmanship with a modern, effortless aesthetic.
@@ -54,7 +44,7 @@ export default async function AboutPage() {
                 As a mother-daughter brand, our vision extends beyond creating beautiful garments. We aspire to build a label that is cherished across generations—a name associated with authenticity, craftsmanship, and thoughtful design.
               </p>
             </div>
-            <div className="pt-4">
+            <div className="pt-4 flex justify-center">
               <Link
                 href="/shop"
                 className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-brand-gold hover:text-brand-gold-light transition-colors border-b border-brand-gold/30 pb-1 hover:border-brand-gold"
@@ -187,7 +177,7 @@ export default async function AboutPage() {
       <section className="py-24 bg-brand-cream border-t border-[#F0E6D2] text-center space-y-8">
         <div className="space-y-4 max-w-2xl mx-auto">
           <h2 className="font-serif text-3xl sm:text-5xl text-brand-charcoal font-light lowercase">
-            welcome to <span className="font-normal italic text-brand-gold">vamika bhargavi</span>
+            welcome to <span className="font-normal italic text-brand-gold">vamika & bhargavi</span>
           </h2>
           <p className="font-serif text-lg sm:text-xl text-gray-700 italic font-light max-w-xl mx-auto">
             "Curated with love. Crafted with purpose. Designed to become part of your story."
