@@ -112,15 +112,27 @@ export default function SellerDashboard() {
   // Image URLs list
   const [imageUrl1, setImageUrl1] = useState("");
   const [imageUrl2, setImageUrl2] = useState("");
+  const [imageUrl3, setImageUrl3] = useState("");
+  const [imageUrl4, setImageUrl4] = useState("");
+  const [imageUrl5, setImageUrl5] = useState("");
+  const [imageUrl6, setImageUrl6] = useState("");
   const [uploading1, setUploading1] = useState(false);
   const [uploading2, setUploading2] = useState(false);
+  const [uploading3, setUploading3] = useState(false);
+  const [uploading4, setUploading4] = useState(false);
+  const [uploading5, setUploading5] = useState(false);
+  const [uploading6, setUploading6] = useState(false);
 
-  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>, imageNum: 1 | 2) => {
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>, imageNum: 1 | 2 | 3 | 4 | 5 | 6) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (imageNum === 1) setUploading1(true);
-    else setUploading2(true);
+    else if (imageNum === 2) setUploading2(true);
+    else if (imageNum === 3) setUploading3(true);
+    else if (imageNum === 4) setUploading4(true);
+    else if (imageNum === 5) setUploading5(true);
+    else if (imageNum === 6) setUploading6(true);
 
     try {
       const formData = new FormData();
@@ -134,7 +146,11 @@ export default function SellerDashboard() {
       const data = await res.json();
       if (res.ok && data.url) {
         if (imageNum === 1) setImageUrl1(data.url);
-        else setImageUrl2(data.url);
+        else if (imageNum === 2) setImageUrl2(data.url);
+        else if (imageNum === 3) setImageUrl3(data.url);
+        else if (imageNum === 4) setImageUrl4(data.url);
+        else if (imageNum === 5) setImageUrl5(data.url);
+        else if (imageNum === 6) setImageUrl6(data.url);
       } else {
         alert(data.error || "Failed to upload image. Please try again.");
       }
@@ -143,7 +159,11 @@ export default function SellerDashboard() {
       alert("A network error occurred while uploading image.");
     } finally {
       if (imageNum === 1) setUploading1(false);
-      else setUploading2(false);
+      else if (imageNum === 2) setUploading2(false);
+      else if (imageNum === 3) setUploading3(false);
+      else if (imageNum === 4) setUploading4(false);
+      else if (imageNum === 5) setUploading5(false);
+      else if (imageNum === 6) setUploading6(false);
     }
   };
 
@@ -539,7 +559,7 @@ export default function SellerDashboard() {
       setFormSubmitting(false);
       return;
     }
-    const imagesToSubmit = [imageUrl1, imageUrl2].filter(Boolean);
+    const imagesToSubmit = [imageUrl1, imageUrl2, imageUrl3, imageUrl4, imageUrl5, imageUrl6].filter(Boolean);
     if (imagesToSubmit.length === 0) {
       setFormMessage({ type: "error", text: "Please upload or provide at least one silhouette image." });
       setFormStep(2);
@@ -641,6 +661,10 @@ export default function SellerDashboard() {
         setCareInstructions("");
         setImageUrl1("");
         setImageUrl2("");
+        setImageUrl3("");
+        setImageUrl4("");
+        setImageUrl5("");
+        setImageUrl6("");
         setTopLength("");
         setPantLength("");
         setSleeveLength("");
@@ -1344,88 +1368,55 @@ export default function SellerDashboard() {
                     <h3 className="text-xs font-bold uppercase tracking-wider text-brand-charcoal flex items-center">
                       <Upload className="h-4 w-4 mr-2 text-brand-gold" /> Silhouette Images
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      {/* Primary Image Upload */}
-                      <div className="space-y-2">
-                        <label className="block text-[9px] font-sans text-gray-500 uppercase tracking-wider font-bold">
-                          Primary Image (Required)
-                        </label>
-                        {imageUrl1 ? (
-                          <div className="relative aspect-[3/4] max-w-[200px] border border-[#E8DFC8] rounded-md overflow-hidden bg-brand-cream-dark group">
-                            <img src={imageUrl1} alt="Primary" className="w-full h-full object-cover" />
-                            <button
-                              type="button"
-                              onClick={() => setImageUrl1("")}
-                              className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 cursor-pointer shadow-md hover:bg-red-700 transition-colors flex items-center justify-center h-6 w-6"
-                              title="Remove image"
-                            >
-                              <X className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="relative border-2 border-dashed border-[#E8DFC8] hover:border-brand-gold rounded-md p-6 max-w-[200px] text-center bg-white transition-colors">
-                            {uploading1 ? (
-                              <div className="space-y-2 py-4 flex flex-col items-center justify-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-brand-gold border-t-transparent mx-auto" />
-                                <p className="text-[9px] font-sans text-gray-400 uppercase tracking-wider">Uploading...</p>
-                              </div>
-                            ) : (
-                              <label className="cursor-pointer space-y-2 block">
-                                <Upload className="h-6 w-6 text-[#A59578] mx-auto" />
-                                <span className="block text-[10px] font-sans text-stone-600 uppercase tracking-wider font-bold">Choose File</span>
-                                <span className="block text-[8px] text-gray-400">JPG, PNG, WebP up to 5MB</span>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => handleImageFileChange(e, 1)}
-                                  className="hidden"
-                                />
-                              </label>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Secondary Image Upload */}
-                      <div className="space-y-2">
-                        <label className="block text-[9px] font-sans text-gray-500 uppercase tracking-wider font-bold">
-                          Secondary Image (Optional)
-                        </label>
-                        {imageUrl2 ? (
-                          <div className="relative aspect-[3/4] max-w-[200px] border border-[#E8DFC8] rounded-md overflow-hidden bg-brand-cream-dark group">
-                            <img src={imageUrl2} alt="Secondary" className="w-full h-full object-cover" />
-                            <button
-                              type="button"
-                              onClick={() => setImageUrl2("")}
-                              className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 cursor-pointer shadow-md hover:bg-red-700 transition-colors flex items-center justify-center h-6 w-6"
-                              title="Remove image"
-                            >
-                              <X className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="relative border-2 border-dashed border-[#E8DFC8] hover:border-brand-gold rounded-md p-6 max-w-[200px] text-center bg-white transition-colors">
-                            {uploading2 ? (
-                              <div className="space-y-2 py-4 flex flex-col items-center justify-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-brand-gold border-t-transparent mx-auto" />
-                                <p className="text-[9px] font-sans text-gray-400 uppercase tracking-wider">Uploading...</p>
-                              </div>
-                            ) : (
-                              <label className="cursor-pointer space-y-2 block">
-                                <Upload className="h-6 w-6 text-[#A59578] mx-auto" />
-                                <span className="block text-[10px] font-sans text-stone-600 uppercase tracking-wider font-bold">Choose File</span>
-                                <span className="block text-[8px] text-gray-400">JPG, PNG, WebP up to 5MB</span>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={(e) => handleImageFileChange(e, 2)}
-                                  className="hidden"
-                                />
-                              </label>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                      {[
+                        { num: 1, label: "Primary (Required)", url: imageUrl1, setUrl: setImageUrl1, uploading: uploading1 },
+                        { num: 2, label: "Image 2 (Optional)", url: imageUrl2, setUrl: setImageUrl2, uploading: uploading2 },
+                        { num: 3, label: "Image 3 (Optional)", url: imageUrl3, setUrl: setImageUrl3, uploading: uploading3 },
+                        { num: 4, label: "Image 4 (Optional)", url: imageUrl4, setUrl: setImageUrl4, uploading: uploading4 },
+                        { num: 5, label: "Image 5 (Optional)", url: imageUrl5, setUrl: setImageUrl5, uploading: uploading5 },
+                        { num: 6, label: "Image 6 (Optional)", url: imageUrl6, setUrl: setImageUrl6, uploading: uploading6 },
+                      ].map(({ num, label, url, setUrl, uploading }) => (
+                        <div key={num} className="space-y-2">
+                          <label className="block text-[9px] font-sans text-gray-500 uppercase tracking-wider font-bold truncate">
+                            {label}
+                          </label>
+                          {url ? (
+                            <div className="relative aspect-[3/4] w-full border border-[#E8DFC8] rounded-md overflow-hidden bg-brand-cream-dark group">
+                              <img src={url} alt={`Silhouette ${num}`} className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => setUrl("")}
+                                className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1 cursor-pointer shadow-md hover:bg-red-700 transition-colors flex items-center justify-center h-6 w-6"
+                                title="Remove image"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="relative border border-dashed border-[#E8DFC8] hover:border-brand-gold rounded-md p-4 w-full aspect-[3/4] flex items-center justify-center text-center bg-white transition-colors">
+                              {uploading ? (
+                                <div className="space-y-2 flex flex-col items-center justify-center">
+                                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-brand-gold border-t-transparent mx-auto" />
+                                  <p className="text-[8px] font-sans text-gray-400 uppercase tracking-wider">Uploading...</p>
+                                </div>
+                              ) : (
+                                <label className="cursor-pointer space-y-1 block w-full">
+                                  <Upload className="h-5 w-5 text-[#A59578] mx-auto" />
+                                  <span className="block text-[8px] font-sans text-stone-600 uppercase tracking-wider font-bold">Choose</span>
+                                  <span className="block text-[7px] text-gray-400">Up to 5MB</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleImageFileChange(e, num as any)}
+                                    className="hidden"
+                                  />
+                                </label>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
