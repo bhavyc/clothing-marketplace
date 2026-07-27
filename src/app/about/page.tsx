@@ -48,9 +48,9 @@ export default async function AboutPage() {
 
           <div className="w-16 h-px bg-brand-gold/60 mx-auto my-8" />
 
-          {/* Luxury text panel */}
-          <div className="max-w-2xl mx-auto space-y-8 text-stone-700 font-serif text-sm sm:text-base md:text-lg leading-relaxed font-light italic">
-            <p className="first-letter:text-3xl first-letter:font-serif first-letter:font-bold first-letter:text-brand-gold first-letter:float-left first-letter:mr-2 first-letter:leading-none">
+          {/* Clean luxury text panel */}
+          <div className="max-w-2xl mx-auto space-y-6 text-stone-600 font-sans text-sm sm:text-base leading-relaxed font-light tracking-wide">
+            <p>
               Founded by Bhargavi and inspired by her daughter Vamika, our brand is a reflection of love, legacy, and individuality. Every collection is thoughtfully curated to bring together the richness of Indian craftsmanship with a modern, effortless aesthetic.
             </p>
             <p>
