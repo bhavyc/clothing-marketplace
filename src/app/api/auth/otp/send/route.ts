@@ -177,9 +177,10 @@ console.log("Token length:", token?.length)
       message: "Verification OTP code sent successfully.",
     };
 
-    // For convenience in dev, return the OTP
-    // Temporarily enabled even in production for Vercel dev deployment as requested
-    responsePayload.devOtp = otp;
+    // For convenience in dev, return the OTP only in development mode
+    if (process.env.NODE_ENV === "development") {
+      responsePayload.devOtp = otp;
+    }
 
     return NextResponse.json(responsePayload);
   } catch (error: any) {

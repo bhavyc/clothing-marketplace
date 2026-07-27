@@ -104,14 +104,101 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Simulate sending WhatsApp reminder payload
-      console.log(`\n==================================================`);
-      console.log(`🔁 [WHATSAPP REMINDER DISPATCHED] (Attempt ${nextReminderCount}/2)`);
-      console.log(`To: ${user.phone}`);
-      console.log(`Template: "reminder_promo_coupon_campaign"`);
-      console.log(`Caption: "Hey, we noticed you missed your ${originalCoupon.discountPercent}% off offer! Here is a fresh 5% off coupon code ${reminderCode} valid for the next 67 minutes. Don't miss out!"`);
-      console.log(`Action Link: http://localhost:3000/checkout?utm_source=whatsapp&coupon=${reminderCode}`);
-      console.log(`==================================================\n`);
+      // 3. Send real Meta WhatsApp message / fallback
+      const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID?.replace(/^"|"$/g, "");
+      const token = process.env.WHATSAPP_ACCESS_TOKEN?.replace(/^"|"$/g, "");
+
+      let sentViaWhatsApp = false;
+
+      if (phoneId && token && user.phone) {
+        const formattedPhone = user.phone.replace("+", "");
+        try {
+          const resMetaTemplate = await fetch(
+            `https://graph.facebook.com/v18.0/${phoneId}/messages`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                messaging_product: "whatsapp",
+                recipient_type: "individual",
+                to: formattedPhone,
+                type: "template",
+                template: {
+                  name: "reminder_promo_coupon_campaign",
+                  language: { code: "en_US" },
+                  components: [
+                    {
+                      type: "body",
+                      parameters: [
+                        { type: "text", text: String(originalCoupon.discountPercent || "10") },
+                        { type: "text", text: reminderCode }
+                      ]
+                    },
+                    {
+                      type: "button",
+                      sub_type: "url",
+                      index: 0,
+                      parameters: [{ type: "text", text: `?coupon=${reminderCode}&utm_source=whatsapp` }]
+                    }
+                  ]
+                }
+              }),
+            }
+          );
+
+          if (resMetaTemplate.ok) {
+            sentViaWhatsApp = true;
+            console.log(`✅ WhatsApp reminder template sent via Meta API to ${user.phone}`);
+          } else {
+            const errData = await resMetaTemplate.json();
+            console.warn(`Template reminder send failed (status: ${resMetaTemplate.status}). Response: ${JSON.stringify(errData)}`);
+            
+            // Fallback to text message
+            const textBody = `🛍️ *Vamika & Bhargavi* — Don't miss out!\n\nHey, we noticed you missed your ${originalCoupon.discountPercent}% off offer! Here is a fresh 5% off coupon code *${reminderCode}* valid for the next 67 minutes.\n\nShop now: ${process.env.NEXTAUTH_URL || "http://localhost:3000"}/checkout?coupon=${reminderCode}&utm_source=whatsapp`;
+            
+            const resMetaText = await fetch(
+              `https://graph.facebook.com/v18.0/${phoneId}/messages`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  messaging_product: "whatsapp",
+                  to: formattedPhone,
+                  type: "text",
+                  text: { body: textBody }
+                }),
+              }
+            );
+
+            if (resMetaText.ok) {
+              sentViaWhatsApp = true;
+              console.log(`✅ WhatsApp reminder text fallback sent via Meta API to ${user.phone}`);
+            } else {
+              const textErrData = await resMetaText.json();
+              console.error(`WhatsApp reminder fallback also failed: ${JSON.stringify(textErrData)}`);
+            }
+          }
+        } catch (metaErr) {
+          console.error("Failed to send WhatsApp reminder via Meta API:", metaErr);
+        }
+      }
+
+      // Simulate/Fallback console log
+      if (!sentViaWhatsApp) {
+        console.log(`\n==================================================`);
+        console.log(`🔁 [WHATSAPP REMINDER DISPATCHED - SIMULATION] (Attempt ${nextReminderCount}/2)`);
+        console.log(`To: ${user.phone}`);
+        console.log(`Template: "reminder_promo_coupon_campaign"`);
+        console.log(`Caption: "Hey, we noticed you missed your ${originalCoupon.discountPercent}% off offer! Here is a fresh 5% off coupon code ${reminderCode} valid for the next 67 minutes. Don't miss out!"`);
+        console.log(`Action Link: ${process.env.NEXTAUTH_URL || "http://localhost:3000"}/checkout?utm_source=whatsapp&coupon=${reminderCode}`);
+        console.log(`==================================================\n`);
+      }
 
       processedList.push({
         phone: user.phone,

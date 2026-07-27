@@ -102,9 +102,10 @@ export async function POST(req: NextRequest) {
       message: "One-Time Password (OTP) has been sent to your email address.",
     };
 
-    // For dev mode convenience, expose the OTP in response
-    // Temporarily enabled even in production for Vercel dev deployment as requested
-    responsePayload.devOtp = otp;
+    // For dev mode convenience, expose the OTP in response only in development mode
+    if (process.env.NODE_ENV === "development") {
+      responsePayload.devOtp = otp;
+    }
 
     return NextResponse.json(responsePayload);
   } catch (error: any) {
