@@ -95,6 +95,23 @@ console.log("Token length:", token?.length)
         const templateToTry = templateNameToUse || "verificartion_code";
         console.log(`Attempting to send OTP template "${templateToTry}" to ${formattedPhone}`);
         
+        const components: any[] = [
+          {
+            type: "body",
+            parameters: [{ type: "text", text: otp }]
+          }
+        ];
+
+        // The user's template "verificartion_code" contains a URL button requiring a parameter
+        if (templateToTry === "verificartion_code" || templateToTry.includes("verificartion")) {
+          components.push({
+            type: "button",
+            sub_type: "url",
+            index: 0,
+            parameters: [{ type: "text", text: otp }]
+          });
+        }
+
         const templatePayload = {
           messaging_product: "whatsapp",
           recipient_type: "individual",
@@ -103,12 +120,7 @@ console.log("Token length:", token?.length)
           template: {
             name: templateToTry,
             language: { code: "en_US" },
-            components: [
-              {
-                type: "body",
-                parameters: [{ type: "text", text: otp }]
-              }
-            ]
+            components
           }
         };
 
