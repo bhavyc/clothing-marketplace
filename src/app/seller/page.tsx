@@ -1749,6 +1749,11 @@ export default function SellerDashboard() {
                                       <div className="text-[9px] text-gray-400">
                                         Qty: {item.quantity} | Size: {item.topSize}{item.bottomSize ? `/${item.bottomSize}` : ""}
                                       </div>
+                                      {item.selectedOptions && item.selectedOptions !== "{}" && (
+                                        <div className="text-[9px] text-brand-gold italic mt-0.5 max-w-[180px] whitespace-normal break-words font-medium">
+                                          Options: {renderSelectedOptions(item.selectedOptions)}
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 ))}

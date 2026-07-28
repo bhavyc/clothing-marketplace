@@ -1589,6 +1589,11 @@ export default function AdminDashboard() {
                                         <div className="text-[9px] text-gray-400">
                                           Qty: {item.quantity} | Size: {item.variant.topSize}{item.variant.bottomSize ? `/${item.variant.bottomSize}` : ""}
                                         </div>
+                                        {item.selectedOptions && item.selectedOptions !== "{}" && (
+                                          <div className="text-[9px] text-brand-gold italic mt-0.5 max-w-[180px] whitespace-normal break-words font-medium">
+                                            Options: {renderSelectedOptions(item.selectedOptions)}
+                                          </div>
+                                        )}
                                         <div className="text-[8px] text-brand-gold uppercase font-bold tracking-wider">
                                           Seller: {item.variant.product.seller?.shopName || "Unknown"}
                                         </div>
