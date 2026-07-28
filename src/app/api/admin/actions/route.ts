@@ -119,6 +119,63 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, message: "Coupon deleted permanently." });
     }
 
+    // Action: Delete Product Listed Permanently (Cascading)
+    if (action === "DELETE_PRODUCT") {
+      const { productId } = body;
+      if (!productId) {
+        return NextResponse.json({ error: "Product ID is required." }, { status: 400 });
+      }
+
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+        include: { variants: true },
+      });
+
+      if (!product) {
+        return NextResponse.json({ error: "Product not found." }, { status: 404 });
+      }
+
+      await prisma.$transaction(
+        async (tx) => {
+          const variantIds = product.variants.map((v) => v.id);
+
+          // 1. Delete associated OrderItems referencing this product's variants
+          await tx.orderItem.deleteMany({
+            where: { variantId: { in: variantIds } },
+          });
+
+          // 2. Delete associated CartItems referencing this product's variants
+          await tx.cartItem.deleteMany({
+            where: { variantId: { in: variantIds } },
+          });
+
+          // 3. Delete associated ProductOptions
+          await tx.productOption.deleteMany({
+            where: { productId },
+          });
+
+          // 4. Delete associated ProductVariants
+          await tx.productVariant.deleteMany({
+            where: { productId },
+          });
+
+          // 5. Finally, delete the Product record itself
+          await tx.product.delete({
+            where: { id: productId },
+          });
+        },
+        {
+          maxWait: 15000,
+          timeout: 30000,
+        }
+      );
+
+      return NextResponse.json({
+        success: true,
+        message: "Product and all its variants/options deleted successfully.",
+      });
+    }
+
     // Action: Toggle Product Bestseller Status
     if (action === "TOGGLE_BESTSELLER") {
       const { productId } = body;

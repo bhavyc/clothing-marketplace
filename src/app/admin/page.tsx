@@ -641,6 +641,33 @@ export default function AdminDashboard() {
     }
   };
 
+  // Action: Delete Product Listed Permanently
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm("Are you sure you want to permanently delete this product and all its variants? This action cannot be undone.")) {
+      return;
+    }
+    setActionLoading(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/admin/actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "DELETE_PRODUCT", productId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage({ type: "success", text: "Product and all its variants/options successfully deleted." });
+        fetchDashboardData();
+      } else {
+        setMessage({ type: "error", text: data.error || "Failed to delete product." });
+      }
+    } catch (err) {
+      setMessage({ type: "error", text: "Server connection failed." });
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   // Action: Process Return Request (Approve/Reject)
   const handleProcessReturn = async (orderId: string, orderItemId: string, approve: boolean, confirmReceipt?: boolean) => {
     setActionLoading(true);
@@ -1381,17 +1408,26 @@ export default function AdminDashboard() {
                                     )}
                                   </td>
                                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                                    <button
-                                      onClick={() => handleToggleBestseller(p.id)}
-                                      disabled={actionLoading}
-                                      className={`px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
-                                        p.isBestseller
-                                          ? "bg-stone-200 text-stone-700 hover:bg-stone-300"
-                                          : "bg-brand-charcoal text-brand-cream hover:bg-brand-gold"
-                                      }`}
-                                    >
-                                      {p.isBestseller ? "Remove bestseller" : "Mark bestseller"}
-                                    </button>
+                                    <div className="flex items-center justify-center gap-2">
+                                      <button
+                                        onClick={() => handleToggleBestseller(p.id)}
+                                        disabled={actionLoading}
+                                        className={`px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer ${
+                                          p.isBestseller
+                                            ? "bg-stone-200 text-stone-700 hover:bg-stone-300"
+                                            : "bg-brand-charcoal text-brand-cream hover:bg-brand-gold"
+                                        }`}
+                                      >
+                                        {p.isBestseller ? "Remove bestseller" : "Mark bestseller"}
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteProduct(p.id)}
+                                        disabled={actionLoading}
+                                        className="px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest bg-red-55 hover:bg-red-65 text-red-650 hover:text-red-750 border border-red-200 transition-all cursor-pointer"
+                                      >
+                                        Delete
+                                      </button>
+                                    </div>
                                   </td>
                                 </tr>
                               );
