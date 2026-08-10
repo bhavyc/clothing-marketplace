@@ -28,6 +28,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileShopOpen, setIsMobileShopOpen] = useState(false);
 
   // Dynamic navigation links
   const [categories, setCategories] = useState<string[]>([]);
@@ -330,28 +331,43 @@ export default function Header() {
           >
             About Us
           </Link>
-          <Link
-            href="/shop"
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="block font-sans text-sm uppercase tracking-wider text-brand-charcoal hover:text-brand-gold py-1 font-bold"
-          >
-            Shop All
-          </Link>
-          
-          {categories.length > 0 && (
-            <div className="pl-4 space-y-2 border-l border-[#F0E6D2]">
-              {categories.map((cat) => (
-                <Link
-                  key={cat}
-                  href={`/shop?category=${encodeURIComponent(cat)}`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block text-xs uppercase tracking-wider text-gray-500 hover:text-brand-gold"
+          <div className="flex flex-col space-y-1">
+            <div className="flex items-center justify-between">
+              <Link
+                href="/shop"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="font-sans text-sm uppercase tracking-wider text-brand-charcoal hover:text-brand-gold py-1 font-bold"
+              >
+                Shop All
+              </Link>
+              {categories.length > 0 && (
+                <button 
+                  onClick={() => setIsMobileShopOpen(!isMobileShopOpen)}
+                  className="p-2 -mr-2 text-brand-charcoal focus:outline-none"
+                  aria-label="Toggle categories"
                 >
-                  {cat}
-                </Link>
-              ))}
+                  <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isMobileShopOpen ? 'rotate-180' : ''}`} />
+                </button>
+              )}
             </div>
-          )}
+            
+            {categories.length > 0 && (
+              <div className={`overflow-hidden transition-all duration-300 ${isMobileShopOpen ? 'max-h-96' : 'max-h-0'}`}>
+                <div className="pl-4 py-2 space-y-3 border-l border-[#F0E6D2] mt-1 mb-2">
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat}
+                      href={`/shop?category=${encodeURIComponent(cat)}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block text-xs uppercase tracking-wider text-gray-500 hover:text-brand-gold"
+                    >
+                      {cat}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           <Link
             href="/shop?collection=Bestsellers"

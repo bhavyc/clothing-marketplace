@@ -167,7 +167,7 @@ function SignInForm() {
             <div className="flex-1 pb-3 text-center text-xs font-sans font-bold uppercase tracking-wider border-b-2 border-brand-gold text-brand-charcoal">
               <span className="flex items-center justify-center gap-1.5">
                 <Phone className="h-3.5 w-3.5" />
-                Phone OTP
+                Mobile Login
               </span>
             </div>
           </div>
@@ -194,8 +194,8 @@ function SignInForm() {
                       Mobile Number
                     </label>
                     <div className="mt-1.5 flex rounded-md border border-[#E8DFC8] bg-white overflow-hidden shadow-xs focus-within:border-brand-gold transition-colors">
-                      <span className="flex items-center bg-stone-50 px-3 text-xs text-brand-charcoal font-bold border-r border-[#E8DFC8]">
-                        🇮🇳 +91
+                      <span className="flex items-center bg-stone-50 px-3 text-sm text-brand-charcoal font-bold border-r border-[#E8DFC8] tracking-widest">
+                        +91
                       </span>
                       <input
                         type="tel"
@@ -334,9 +334,9 @@ function SignInForm() {
           )}
 
           <div className="mt-8 text-center text-[10px] text-stone-500 font-sans tracking-wide leading-relaxed">
-            <span className="text-gray-500">New to Vamika & Bhargavi? </span>
+            <span className="text-gray-500">Fast, secure, and passwordless. </span>
             <span className="font-bold text-brand-gold uppercase tracking-wider block mt-1">
-              Just enter your mobile number above to register instantly!
+              Just enter your mobile number above to login instantly!
             </span>
           </div>
         </div>
