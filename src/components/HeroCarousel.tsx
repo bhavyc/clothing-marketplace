@@ -20,30 +20,30 @@ export default function HeroCarousel() {
   const slides: SlideItem[] = [
     {
       subtitle: "vamika & bhargavi",
-      title1: "exquisite luxury",
-      title2: "couture.",
-      description: "Discover premium hand-crafted ensembles, high-end design aesthetics, and heritage apparel curated for modern elegance.",
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=700&q=80",
+      title1: "handcrafted",
+      title2: "elegance.",
+      description: "Discover our curated collection of timeless silhouettes designed for the modern woman.",
+      image: "https://images.unsplash.com/photo-1608748010899-18f300247112?auto=format&fit=crop&w=1920&h=800&crop=faces,edges&q=80",
       link: "/shop",
-      buttonText: "Explore Collection",
+      buttonText: "Shop Collection",
     },
     {
-      subtitle: "custom styling services",
-      title1: "tailored to your",
-      title2: "perfection.",
-      description: "Enjoy complimentary size customisation and custom fit adjustments directly with our boutique designers.",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=700&q=80",
+      subtitle: "tailored perfection",
+      title1: "bespoke",
+      title2: "styling.",
+      description: "Made to measure outfits crafted with precision, celebrating your unique style and comfort.",
+      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=1920&h=800&crop=faces,edges&q=80",
       link: "/shop",
-      buttonText: "Shop Tailored Fits",
+      buttonText: "Explore Catalog",
     },
     {
-      subtitle: "vamika & bhargavi",
-      title1: "minimalist daily",
-      title2: "wear.",
-      description: "Discover lightweight daily-wear collections, comfortable coord outfits, and breathable silhouettes.",
-      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=80",
+      subtitle: "new arrivals",
+      title1: "everyday",
+      title2: "classics.",
+      description: "Effortless styles and breathable fabrics for your daily wardrobe essentials.",
+      image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1920&h=800&crop=faces,edges&q=80",
       link: "/shop",
-      buttonText: "Explore Casuals",
+      buttonText: "Shop Now",
     },
   ];
 
@@ -63,103 +63,125 @@ export default function HeroCarousel() {
     setActiveSlide((prev) => (prev + 1) % slides.length);
   };
 
+  // Swipe handling
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe) {
+      handleNext();
+    } else if (isRightSwipe) {
+      handlePrev();
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
   return (
-    <div className="relative overflow-hidden bg-[#FAF6F0] border-b border-[#E8DFC8]">
-      {/* Background Soft radial gradient glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(197,168,128,0.08),transparent_50%)] pointer-events-none" />
+    <div 
+      className="relative w-full h-[70vh] sm:h-[80vh] overflow-hidden bg-stone-900 group"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       
       {/* Carousel Tracks */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 lg:py-24 relative z-10">
-        {slides.map((slide, index) => {
-          const isActive = index === activeSlide;
-          if (!isActive) return null;
-          return (
+      {slides.map((slide, index) => {
+        const isActive = index === activeSlide;
+        // Generate a portrait crop URL for mobile
+        const mobileImage = slide.image.replace('w=1920&h=800', 'w=800&h=1200');
+        
+        return (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+            }`}
+          >
+            {/* Desktop Background Image */}
             <div
-              key={index}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 animate-fade-in-slide"
-            >
-              {/* Slide Text Content */}
-              <div className="lg:col-span-7 space-y-4 sm:space-y-6 text-center lg:text-left order-2 lg:order-1 flex flex-col items-center lg:items-start">
-                <div className="inline-flex items-center justify-center space-x-2 bg-white border border-[#E8DFC8]/80 rounded-full px-4 py-1.5 text-[9px] font-sans font-bold uppercase tracking-widest text-brand-gold shadow-2xs">
-                  <Star className="h-3 w-3 fill-brand-gold text-brand-gold animate-pulse" />
-                  <span>{slide.subtitle}</span>
-                </div>
-                
-                <h1 className="font-serif text-3xl sm:text-5xl lg:text-7xl font-semibold tracking-wide text-brand-charcoal leading-tight lowercase">
-                  {slide.title1} <br />
-                  <span className="text-brand-gold font-normal italic">{slide.title2}</span>
-                </h1>
-                
-                <p className="font-sans text-[10px] sm:text-xs text-gray-500 max-w-lg leading-relaxed uppercase tracking-wider">
-                  {slide.description}
-                </p>
-                
-                <div className="flex flex-col w-full sm:w-auto sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
-                  <Link
-                    href={slide.link}
-                    className="w-full sm:w-auto inline-flex items-center justify-center bg-brand-charcoal text-brand-cream px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-brand-charcoal/90 transition-all shadow-md hover:shadow-lg group cursor-pointer"
-                  >
-                    {slide.buttonText}
-                    <ArrowRight className="ml-2.5 h-4 w-4 transform group-hover:translate-x-1 transition-transform duration-300" />
-                  </Link>
-                  <Link
-                    href="/shop"
-                    className="w-full sm:w-auto inline-flex items-center justify-center bg-transparent border border-[#C5B495] text-brand-gold px-8 py-3.5 text-xs font-sans font-bold uppercase tracking-widest rounded-md hover:bg-white transition-all shadow-2xs hover:shadow-xs cursor-pointer"
-                  >
-                    View All Silhouettes
-                  </Link>
-                </div>
-              </div>
-
-              {/* Slide Image collage wrapper */}
-              <div className="lg:col-span-5 relative flex justify-center order-1 lg:order-2">
-                {/* Visual Accent Box behind the image */}
-                <div className="absolute inset-4 -right-1 -bottom-4 border border-brand-gold/40 rounded-lg pointer-events-none transform translate-x-2 translate-y-2 z-0" />
-                
-                <div className="relative w-full max-w-[280px] sm:max-w-[340px] aspect-[3/4] border-2 border-brand-gold rounded-lg shadow-xl overflow-hidden bg-brand-cream-dark z-10 group">
-                  <img
-                    src={slide.image}
-                    alt={slide.title1}
-                    className="w-full h-full object-cover transform scale-100 group-hover:scale-103 transition-transform duration-1000 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/45 via-transparent to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
-                  
-                  {/* Decorative slide label */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-xs p-3 rounded border border-[#E8DFC8] shadow-md transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
-                    <span className="text-[8px] text-brand-gold uppercase tracking-widest font-sans font-bold block">Featured Look</span>
-                    <span className="font-serif text-[10px] sm:text-xs uppercase tracking-widest text-brand-charcoal font-semibold">{slide.title1} {slide.title2}</span>
-                  </div>
-                </div>
-              </div>
+              className="hidden sm:block absolute inset-0 bg-cover bg-center transform scale-100 transition-transform duration-[10s] ease-out"
+              style={{
+                backgroundImage: `url('${slide.image}')`,
+                transform: isActive ? "scale(1.05)" : "scale(1)",
+              }}
+            />
+            {/* Mobile Background Image (Portrait Crop) */}
+            <div
+              className="block sm:hidden absolute inset-0 bg-cover bg-center transform scale-100 transition-transform duration-[10s] ease-out"
+              style={{
+                backgroundImage: `url('${mobileImage}')`,
+                transform: isActive ? "scale(1.05)" : "scale(1)",
+              }}
+            />
+            
+            {/* Gradient Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-black/40 sm:bg-black/30" />
+            
+            {/* Slide Content */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-20 animate-fade-in-slide">
+              <span className="text-[10px] sm:text-xs font-sans font-bold uppercase tracking-[0.2em] text-white/90 mb-4 drop-shadow-md">
+                {slide.subtitle}
+              </span>
+              
+              <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-wide text-white leading-tight lowercase drop-shadow-lg mb-6">
+                {slide.title1} <br />
+                <span className="font-normal italic text-brand-gold">{slide.title2}</span>
+              </h1>
+              
+              <p className="font-sans text-xs sm:text-sm text-white/80 max-w-lg leading-relaxed uppercase tracking-widest drop-shadow-md mb-8">
+                {slide.description}
+              </p>
+              
+              <Link
+                href={slide.link}
+                className="inline-flex items-center justify-center bg-brand-gold text-brand-charcoal px-10 py-4 text-xs font-sans font-bold uppercase tracking-widest rounded-sm hover:bg-white transition-colors duration-300 shadow-xl cursor-pointer"
+              >
+                {slide.buttonText}
+              </Link>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
 
-      {/* Manual Slide Navigation Chevrons */}
+      {/* Manual Navigation Arrows */}
       <button
         onClick={handlePrev}
-        className="hidden sm:flex absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 rounded-full bg-white/75 hover:bg-white border border-[#E8DFC8]/60 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold transition-all cursor-pointer items-center justify-center shadow-xs z-20"
+        className="hidden sm:flex absolute left-4 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all cursor-pointer items-center justify-center backdrop-blur-sm z-30"
         aria-label="Previous Slide"
       >
-        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+        <ChevronLeft className="h-6 w-6" />
       </button>
       <button
         onClick={handleNext}
-        className="hidden sm:flex absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 p-1.5 sm:p-2 rounded-full bg-white/75 hover:bg-white border border-[#E8DFC8]/60 hover:border-brand-gold text-brand-charcoal hover:text-brand-gold transition-all cursor-pointer items-center justify-center shadow-xs z-20"
+        className="hidden sm:flex absolute right-4 top-1/2 transform -translate-y-1/2 p-3 rounded-full bg-black/20 hover:bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-all cursor-pointer items-center justify-center backdrop-blur-sm z-30"
         aria-label="Next Slide"
       >
-        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+        <ChevronRight className="h-6 w-6" />
       </button>
 
-      {/* Slide Indicators Dots at the Bottom */}
-      <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex space-x-2.5 z-20">
+      {/* Slide Indicators */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-30">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setActiveSlide(index)}
-            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-              index === activeSlide ? "w-6 bg-brand-gold" : "w-2 bg-[#E8DFC8]"
+            className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+              index === activeSlide ? "w-8 bg-brand-gold" : "w-4 bg-white/50 hover:bg-white/80"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

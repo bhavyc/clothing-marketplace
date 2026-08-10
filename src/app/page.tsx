@@ -5,6 +5,7 @@ import CollectionCarousel from "@/components/CollectionCarousel";
 import BestsellersCarousel from "@/components/BestsellersCarousel";
 import { ArrowRight, Star, Truck, Scissors, ShieldCheck, Sparkles } from "lucide-react";
 
+
 export const revalidate = 0; // Fetch fresh data on page load
 
 export default async function Home() {
@@ -179,6 +180,8 @@ export default async function Home() {
       orderBy: {
         createdAt: "desc",
       },
+      distinct: ["collection"],
+      take: 10,
     });
 
     const collectionsMap = new Map<string, string>();
@@ -213,39 +216,46 @@ export default async function Home() {
     console.error("Error loading dynamic collections:", error);
   }
 
+  const fallbackCollections = [
+    {
+      title: "Aari Embroidery Luxe",
+      subtitle: "Traditional Artistry",
+      image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80",
+      link: "/shop?collection=Aari+Embroidery",
+    },
+    {
+      title: "Festive Couture",
+      subtitle: "Handcrafted Luxury",
+      image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80",
+      link: "/shop?collection=Luxe+Festive",
+    },
+    {
+      title: "Pheran Silhouette Sets",
+      subtitle: "Tailored Outfits",
+      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
+      link: "/shop?category=Pheran+Set",
+    },
+    {
+      title: "Summer Linen Bloom",
+      subtitle: "Cool & Breathable",
+      image: "https://images.unsplash.com/photo-1608748010899-18f300247112?auto=format&fit=crop&w=600&q=80",
+      link: "/shop?collection=Summer+Linen",
+    },
+    {
+      title: "Artisanal Tunics",
+      subtitle: "Daily Coordinate Styling",
+      image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=600&q=80",
+      link: "/shop?category=Kurta",
+    },
+  ];
+
   if (collectionsData.length === 0) {
-    collectionsData = [
-      {
-        title: "Aari Embroidery Luxe",
-        subtitle: "Traditional Artistry",
-        image: "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?auto=format&fit=crop&w=600&q=80",
-        link: "/shop?collection=Aari+Embroidery",
-      },
-      {
-        title: "Festive Couture",
-        subtitle: "Handcrafted Luxury",
-        image: "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=600&q=80",
-        link: "/shop?collection=Luxe+Festive",
-      },
-      {
-        title: "Pheran Silhouette Sets",
-        subtitle: "Tailored Outfits",
-        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
-        link: "/shop?category=Pheran+Set",
-      },
-      {
-        title: "Summer Linen Bloom",
-        subtitle: "Cool & Breathable",
-        image: "https://images.unsplash.com/photo-1608748010899-18f300247112?auto=format&fit=crop&w=600&q=80",
-        link: "/shop?collection=Summer+Linen",
-      },
-      {
-        title: "Artisanal Tunics",
-        subtitle: "Daily Coordinate Styling",
-        image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=600&q=80",
-        link: "/shop?category=Kurta",
-      },
-    ];
+    collectionsData = fallbackCollections;
+  } else if (collectionsData.length < 5) {
+    // Pad with dummy collections so the grid looks full
+    const existingTitles = new Set(collectionsData.map(c => c.title));
+    const toAdd = fallbackCollections.filter(c => !existingTitles.has(c.title));
+    collectionsData = [...collectionsData, ...toAdd].slice(0, 5);
   }
 
   return (
@@ -253,56 +263,9 @@ export default async function Home() {
       {/* Premium Hero Section */}
       <HeroCarousel />
 
-      {/* Brand Value Grid */}
-      <section className="bg-[#FAF8F5] py-16 border-t border-b border-[#E8DFC8]/40">
-        <div className="max-w-7xl mx-auto px-6 sm:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 divide-y md:divide-y-0 md:divide-x divide-[#E8DFC8]/50">
-            
-            {/* Value 1 */}
-            <div className="flex flex-col items-center text-center px-4 py-6 md:py-2 group">
-              <div className="mb-4 text-brand-gold group-hover:scale-110 transition-transform duration-500">
-                <Sparkles className="h-6 w-6 stroke-[1.25]" />
-              </div>
-              <h3 className="font-serif text-sm tracking-[0.15em] uppercase text-brand-charcoal font-medium">
-                Artisanal Weaves
-              </h3>
-              <p className="font-sans text-[10px] text-stone-500 mt-2.5 uppercase tracking-[0.08em] leading-relaxed max-w-[280px]">
-                Handloomed heritage fabrics sourced directly from local Indian weavers.
-              </p>
-            </div>
-
-            {/* Value 2 */}
-            <div className="flex flex-col items-center text-center px-4 py-6 md:py-2 group">
-              <div className="mb-4 text-brand-gold group-hover:scale-110 transition-transform duration-500">
-                <Scissors className="h-6 w-6 stroke-[1.25]" />
-              </div>
-              <h3 className="font-serif text-sm tracking-[0.15em] uppercase text-brand-charcoal font-medium">
-                Made to Measure
-              </h3>
-              <p className="font-sans text-[10px] text-stone-500 mt-2.5 uppercase tracking-[0.08em] leading-relaxed max-w-[280px]">
-                Stitched exactly to your size measurements for a flawless silhouette.
-              </p>
-            </div>
-
-            {/* Value 3 */}
-            <div className="flex flex-col items-center text-center px-4 py-6 md:py-2 group">
-              <div className="mb-4 text-brand-gold group-hover:scale-110 transition-transform duration-500">
-                <Star className="h-6 w-6 stroke-[1.25]" />
-              </div>
-              <h3 className="font-serif text-sm tracking-[0.15em] uppercase text-brand-charcoal font-medium">
-                Slow Fashion
-              </h3>
-              <p className="font-sans text-[10px] text-stone-500 mt-2.5 uppercase tracking-[0.08em] leading-relaxed max-w-[280px]">
-                Promoting ethical artisan wages and zero-waste designs.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
       {/* Featured Collections / Categories */}
-      <section className="py-6 overflow-hidden">
+      <section className="pt-16 sm:pt-20 pb-6 overflow-hidden">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-12 lg:px-16 mb-8 sm:mb-6">
           <div className="w-full flex flex-col sm:flex-row justify-between items-center sm:items-end gap-6 sm:gap-4">
             <div className="text-center sm:text-left space-y-2 sm:space-y-1.5">

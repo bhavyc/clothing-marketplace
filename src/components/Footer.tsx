@@ -14,10 +14,10 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#FAF6F0] border-t border-[#E8DFC8] py-8 md:py-14 px-6 mt-auto">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-0 md:gap-10">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4 w-full">
         
         {/* Brand Column */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left mb-8 md:mb-0">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left md:max-w-[280px]">
           <h3 className="font-serif text-xl font-semibold lowercase tracking-widest text-brand-charcoal flex items-baseline gap-1.5 mb-4">
             vamika <span className="font-serif italic text-brand-gold font-normal">&</span> bhargavi
           </h3>
