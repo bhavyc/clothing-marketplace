@@ -327,7 +327,7 @@ export default async function Home() {
             </h2>
             <div className="h-0.5 w-12 bg-brand-gold" />
             <p className="font-sans text-[11px] sm:text-xs sm:text-sm text-stone-300 uppercase tracking-widest leading-relaxed max-w-xl">
-             At Vamika & Bhargavi, we believe in perfect silhouettes that fit you flawlessly. Enjoy complimentary size customisation, length adjustments, and direct styling consultations with our designers to bring your dream outfit to life.
+              At Vamika & Bhargavi, we believe in perfect silhouettes that fit you flawlessly. Enjoy complimentary size customisation, length adjustments, and direct styling consultations with our designers to bring your dream outfit to life.
             </p>
             <div className="pt-2 sm:pt-4 flex flex-col sm:flex-row gap-4">
               <a
