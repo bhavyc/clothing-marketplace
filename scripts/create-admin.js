@@ -2,7 +2,7 @@ require("dotenv").config();
 const { Pool } = require("pg");
 const bcrypt = require("bcryptjs");
 
-const email = process.argv[2] || "admin@boutique.com";
+const email = process.argv[2] || "bhargavivamika@gmail.com";
 const password = process.argv[3] || "admin123";
 const name = process.argv[4] || "Store Administrator";
 

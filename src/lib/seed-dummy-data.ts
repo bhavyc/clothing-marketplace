@@ -18,6 +18,17 @@ export async function populateDummyData() {
 
   // 1. Ensure Admin User exists
   await prisma.user.upsert({
+    where: { email: "bhargavivamika@gmail.com" },
+    update: { role: "ADMIN" },
+    create: {
+      email: "bhargavivamika@gmail.com",
+      name: "Vamika Bhargavi Admin",
+      password: adminHash,
+      role: "ADMIN",
+    },
+  });
+
+  await prisma.user.upsert({
     where: { email: "admin@boutique.com" },
     update: { role: "ADMIN" },
     create: {
