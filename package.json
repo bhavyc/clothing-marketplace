@@ -6,7 +6,8 @@
     "dev": "next dev -H 0.0.0.0 --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "create-admin": "node scripts/create-admin.js"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.8.0",
