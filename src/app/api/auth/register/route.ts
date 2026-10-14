@@ -14,9 +14,9 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!["CUSTOMER", "SELLER", "ADMIN"].includes(role)) {
-      return NextResponse.json({ error: "Invalid role specified." }, { status: 400 });
-    }
+    // Public registration is restricted to CUSTOMER only
+    // Single-seller and Admin accounts are provisioned securely and cannot be registered publicly
+    const assignedRole = "CUSTOMER";
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -38,23 +38,9 @@ export async function POST(req: Request) {
           name,
           email,
           password: hashedPassword,
-          role,
+          role: assignedRole,
         },
       });
-
-      if (role === "SELLER") {
-        if (!shopName) {
-          throw new Error("Shop name is required for seller registration.");
-        }
-        await tx.sellerProfile.create({
-          data: {
-            userId: user.id,
-            shopName,
-            description: shopDescription || "",
-            isApproved: true,
-          },
-        });
-      }
 
       return user;
     },

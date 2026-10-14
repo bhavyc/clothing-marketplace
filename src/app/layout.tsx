@@ -17,6 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://vamikabhargavi.com"),
   title: "Vamika Bhargavi | Premium Designer Boutique",
   description: "Curated with love. Crafted with purpose. Designed to become part of your story. Explore our exquisite mother-daughter designer wear collections.",
 };

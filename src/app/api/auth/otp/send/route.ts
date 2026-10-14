@@ -2,36 +2,49 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+import { DEMO_OTP, isDummyPhoneNumber, normalizePhoneNumber, getOrCreateDemoUser } from "@/lib/demo-auth";
+
 export async function POST(req: NextRequest) {
   try {
     const { phone } = await req.json();
 
-    if (!phone || !/^\+91\d{10}$/.test(phone)) {
+    const normalizedPhone = normalizePhoneNumber(phone);
+
+    if (!normalizedPhone || !/^\+91\d{10}$/.test(normalizedPhone)) {
       return NextResponse.json(
-        { error: "A valid phone number starting with +91 is required." },
+        { error: "A valid phone number starting with +91 or 10-digit mobile number is required." },
         { status: 400 }
       );
     }
 
+    // 0. Check if this is an App Store demo/reviewer phone number
+    if (isDummyPhoneNumber(normalizedPhone)) {
+      const demoUser = await getOrCreateDemoUser(normalizedPhone);
+      return NextResponse.json({
+        success: true,
+        message: "Verification OTP sent successfully (App Store Demo Account).",
+        devOtp: DEMO_OTP,
+      });
+    }
+
     // 1. Generate 6-digit OTP and expiration (5 minutes from now)
-    const isDemoNumber = phone === "+919999999999";
-    const otp = isDemoNumber ? "123456" : Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpires = new Date(Date.now() + 5 * 60 * 1000);
 
     // 2. Find user by phone number
     let user = await prisma.user.findFirst({
-      where: { phone },
+      where: { phone: normalizedPhone },
     });
 
     if (!user) {
       // Create user if not exists with placeholder credentials
-      const placeholderEmail = `user-${phone.replace("+", "")}@boutique.com`;
+      const placeholderEmail = `user-${normalizedPhone.replace("+", "")}@boutique.com`;
       const hashedPassword = await bcrypt.hash(`otp-temp-pwd-${Date.now()}`, 10);
       user = await prisma.user.create({
         data: {
           email: placeholderEmail,
           password: hashedPassword,
-          phone,
+          phone: normalizedPhone,
           resetOtp: otp,
           resetOtpExpires: otpExpires,
         },
@@ -49,19 +62,12 @@ export async function POST(req: NextRequest) {
 
     const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID?.replace(/^"|"$/g, "");
     const token = process.env.WHATSAPP_ACCESS_TOKEN?.replace(/^"|"$/g, "");
-    // YE ADD KARO
-console.log("Phone ID:", phoneId)
-console.log("Token first 20 chars:", token?.slice(0, 20))
-console.log("Token length:", token?.length)
     const businessId = process.env.WHATSAPP_BUSINESS_ACCOUNT_ID?.replace(/^"|"$/g, "");
 
     let sentViaWhatsApp = false;
     let metaResponseLog = "";
 
-    if (isDemoNumber) {
-      sentViaWhatsApp = true;
-      console.log(`Bypassed real WhatsApp API call for Demo Number: ${phone}. Static OTP: ${otp}`);
-    } else if (phoneId && token) {
+    if (phoneId && token) {
       const formattedPhone = phone.replace("+", "");
       try {
         // Step 1: Detect approved templates in Meta Account

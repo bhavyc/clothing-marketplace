@@ -73,7 +73,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               items.map((item) => (
                 <div
                   key={item.id}
-                  className="flex py-2 border-b border-[#FAF5EC] last:border-b-0"
+                  className="flex py-3 border-b border-[#FAF5EC] last:border-b-0 items-start"
                 >
                   {/* Image */}
                   <div className="h-24 w-18 flex-shrink-0 overflow-hidden rounded-md border border-[#E8DFC8] bg-brand-cream-dark">
@@ -85,13 +85,13 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
 
                   {/* Details */}
-                  <div className="ml-4 flex-1 flex flex-col justify-between">
+                  <div className="ml-3.5 flex-1 flex flex-col justify-between min-w-0 min-h-[6rem]">
                     <div>
-                      <div className="flex justify-between">
-                        <h3 className="font-serif text-sm font-medium text-brand-charcoal line-clamp-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-serif text-sm font-medium text-brand-charcoal leading-snug line-clamp-2 min-w-0 flex-1">
                           {item.productTitle}
                         </h3>
-                        <p className="ml-2 font-sans text-xs font-semibold text-brand-charcoal">
+                        <p className="font-sans text-xs font-semibold text-brand-charcoal shrink-0 whitespace-nowrap text-right">
                           Rs. {(item.unitPrice * item.quantity).toLocaleString("en-IN")}
                         </p>
                       </div>
@@ -129,7 +129,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </div>
 
                     {/* Quantity Selector and Delete */}
-                    <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center justify-between mt-3 pt-1">
                       <div className="flex items-center border border-[#E8DFC8] rounded-md bg-white">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}

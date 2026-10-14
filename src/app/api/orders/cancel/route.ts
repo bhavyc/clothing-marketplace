@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getUserSession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getUserSession(req);
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in." },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const { orderNumber } = body;
 
@@ -22,6 +31,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Order not found." },
         { status: 404 }
+      );
+    }
+
+    // Authorization check: Only order owner or admin can cancel
+    const currentUserId = (session.user as any).id;
+    const currentUserRole = (session.user as any).role;
+    if (order.userId && order.userId !== currentUserId && currentUserRole !== "ADMIN") {
+      return NextResponse.json(
+        { error: "Forbidden. You are not authorized to cancel this order." },
+        { status: 403 }
       );
     }
 

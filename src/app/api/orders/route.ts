@@ -188,9 +188,10 @@ export async function POST(req: NextRequest) {
 
       const finalTotalAmount = Math.round((totalAmount - walletDeduction) * 100) / 100;
 
-      // 3. Generate Order Number
-      const orderCount = await tx.order.count();
-      const orderNumber = `KSH-${10000 + orderCount + 1}`;
+      // 3. Generate Collision-Resistant Unique Order Number
+      const timestampPart = Date.now().toString().slice(-6);
+      const randomPart = Math.floor(1000 + Math.random() * 9000);
+      const orderNumber = `KSH-${timestampPart}-${randomPart}`;
 
       // Calculate if eligible for free gift (every 7th order)
       const userOrdersCount = await tx.order.count({

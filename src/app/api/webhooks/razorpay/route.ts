@@ -13,8 +13,12 @@ export async function POST(req: NextRequest) {
 
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-    // Verify webhook signature (skip in mock mode if no webhook secret is set)
-    if (!isMockMode() && webhookSecret) {
+    // Verify webhook signature (fail closed in production)
+    if (process.env.NODE_ENV === "production" || webhookSecret) {
+      if (!webhookSecret) {
+        console.error("RAZORPAY_WEBHOOK_SECRET is not configured in production.");
+        return NextResponse.json({ error: "Webhook configuration error." }, { status: 500 });
+      }
       const isValid = verifyWebhookSignature(rawBody, signature, webhookSecret);
       if (!isValid) {
         console.warn("Unauthorized webhook signature attempt.");

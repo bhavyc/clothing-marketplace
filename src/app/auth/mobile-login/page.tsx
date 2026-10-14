@@ -95,7 +95,7 @@ function MobileLoginForm() {
       const nextAuthResult = await signIn("credentials", {
         redirect: false,
         phone: fullPhone,
-        password: "OTP_VERIFIED",
+        password: data.token,
         callbackUrl,
       });
 

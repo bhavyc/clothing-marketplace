@@ -1,10 +1,10 @@
 const cloudinary = require('cloudinary').v2;
 
-// 1. Configure Cloudinary with collected credentials
+// 1. Configure Cloudinary with environment variables
 cloudinary.config({
-  cloud_name: 'z7b9zsee',
-  api_key: '269848439944243',
-  api_secret: 'b6pVatqK80cXhF4M0-Dfr8GuTbg'
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 async function run() {

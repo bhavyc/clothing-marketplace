@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { X, Mail, Phone, Clock, ChevronDown } from "lucide-react";
+import { X, Mail, Phone, ChevronDown } from "lucide-react";
 
 export default function Footer() {
   const [activeModal, setActiveModal] = useState<"shipping" | "tailoring" | null>(null);
@@ -14,21 +14,20 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#FAF6F0] border-t border-[#E8DFC8] py-8 md:py-14 px-6 mt-auto">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8 md:gap-4 w-full">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-6 w-full">
         
         {/* Brand Column */}
-        <div className="flex flex-col items-center md:items-start text-center md:text-left md:max-w-[280px]">
-          <h3 className="font-serif text-xl font-semibold lowercase tracking-widest text-brand-charcoal flex items-baseline gap-1.5 mb-4">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left md:col-span-1">
+          <h3 className="font-serif text-xl font-semibold lowercase tracking-widest text-brand-charcoal flex items-baseline gap-1.5 mb-3">
             vamika <span className="font-serif italic text-brand-gold font-normal">&</span> bhargavi
           </h3>
-          <p className="font-sans text-xs text-stone-500 leading-relaxed uppercase tracking-wider mb-5">
+          <p className="font-sans text-xs text-stone-500 leading-relaxed uppercase tracking-wider">
             Curated with love. Crafted with purpose. Designed to become part of your story.
           </p>
-
         </div>
 
         {/* Collections */}
-        <div className="border-b border-[#E8DFC8]/40 md:border-none py-5 md:py-0">
+        <div className="border-b border-[#E8DFC8]/40 md:border-none py-4 md:py-0">
           <button 
             type="button"
             onClick={() => toggleSection('collections')}
@@ -40,8 +39,8 @@ export default function Footer() {
             <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'collections' ? 'rotate-180' : ''}`} />
           </button>
           
-          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'collections' ? 'max-h-40 mt-4' : 'max-h-0'}`}>
-            <ul className="space-y-3 font-sans text-xs w-full text-left">
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'collections' ? 'max-h-40 mt-3' : 'max-h-0'}`}>
+            <ul className="space-y-2.5 font-sans text-xs w-full text-left">
               <li>
                 <Link href="/shop?collection=Bestsellers" className="text-stone-600 hover:text-brand-gold transition-colors block">
                   Bestsellers Shelf
@@ -57,7 +56,7 @@ export default function Footer() {
         </div>
 
         {/* The Studio Column */}
-        <div className="border-b border-[#E8DFC8]/40 md:border-none py-5 md:py-0">
+        <div className="border-b border-[#E8DFC8]/40 md:border-none py-4 md:py-0">
           <button 
             type="button"
             onClick={() => toggleSection('studio')}
@@ -69,11 +68,16 @@ export default function Footer() {
             <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'studio' ? 'rotate-180' : ''}`} />
           </button>
 
-          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'studio' ? 'max-h-48 mt-4' : 'max-h-0'}`}>
-            <ul className="space-y-3 font-sans text-xs w-full text-left">
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'studio' ? 'max-h-48 mt-3' : 'max-h-0'}`}>
+            <ul className="space-y-2.5 font-sans text-xs w-full text-left">
               <li>
                 <Link href="/about" className="text-stone-600 hover:text-brand-gold transition-colors block">
                   Our Story
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Contact Concierge
                 </Link>
               </li>
               <li>
@@ -81,18 +85,51 @@ export default function Footer() {
                   Custom Tailoring
                 </button>
               </li>
+            </ul>
+          </div>
+        </div>
 
+        {/* Policies & Compliance Column (Razorpay Compliance) */}
+        <div className="border-b border-[#E8DFC8]/40 md:border-none py-4 md:py-0">
+          <button 
+            type="button"
+            onClick={() => toggleSection('policies')}
+            className="flex items-center justify-between w-full md:cursor-default"
+          >
+            <h4 className="font-sans text-[11px] font-bold uppercase tracking-widest text-brand-gold">
+              Policies & Legal
+            </h4>
+            <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'policies' ? 'rotate-180' : ''}`} />
+          </button>
+
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'policies' ? 'max-h-56 mt-3' : 'max-h-0'}`}>
+            <ul className="space-y-2.5 font-sans text-xs w-full text-left">
               <li>
-                <button type="button" onClick={() => setActiveModal("shipping")} className="text-stone-600 hover:text-brand-gold transition-colors block text-left cursor-pointer font-sans">
-                  Shipping & Returns
-                </button>
+                <Link href="/terms" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy-policy" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/cancellation-and-refund" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Cancellation & Refund
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping-policy" className="text-stone-600 hover:text-brand-gold transition-colors block">
+                  Shipping & Delivery
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
         {/* Boutique Support Column */}
-        <div className="py-5 md:py-0">
+        <div className="py-4 md:py-0">
           <button 
             type="button"
             onClick={() => toggleSection('support')}
@@ -104,17 +141,19 @@ export default function Footer() {
             <ChevronDown className={`h-4 w-4 text-brand-gold md:hidden transition-transform duration-300 ${expandedSection === 'support' ? 'rotate-180' : ''}`} />
           </button>
 
-          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'support' ? 'max-h-32 mt-4' : 'max-h-0'}`}>
-            <div className="space-y-3 text-xs text-stone-600 font-sans w-full text-left">
+          <div className={`overflow-hidden transition-all duration-300 md:max-h-full md:mt-4 ${expandedSection === 'support' ? 'max-h-40 mt-3' : 'max-h-0'}`}>
+            <div className="space-y-2.5 text-xs text-stone-600 font-sans w-full text-left">
               <div className="flex items-center justify-start gap-2">
                 <Mail className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-                <a href="mailto:vamikabhargavi@gmail.com" className="hover:text-brand-gold transition-colors">
+                <a href="mailto:vamikabhargavi@gmail.com" className="hover:text-brand-gold transition-colors truncate">
                   vamikabhargavi@gmail.com
                 </a>
               </div>
               <div className="flex items-center justify-start gap-2">
                 <Phone className="h-3.5 w-3.5 text-[#A08260] shrink-0" />
-                <span>+91 98739 59531</span>
+                <a href="tel:+919873959531" className="hover:text-brand-gold transition-colors">
+                  +91 98739 59531
+                </a>
               </div>
             </div>
           </div>
@@ -122,8 +161,8 @@ export default function Footer() {
 
       </div>
       
-      <div className="max-w-7xl mx-auto border-t border-[#F0E6D2] mt-12 pt-6 text-center font-sans text-[10px] text-gray-400 uppercase tracking-widest">
-        &copy; {new Date().getFullYear()} Vamika & Bhargavi. All Rights Reserved.
+      <div className="max-w-7xl mx-auto border-t border-[#F0E6D2] mt-10 pt-6 text-center font-sans text-[10px] text-gray-400 uppercase tracking-widest">
+        &copy; {new Date().getFullYear()} Vamika &amp; Bhargavi. All Rights Reserved.
       </div>
 
       {/* Info Modals */}
@@ -154,7 +193,7 @@ export default function Footer() {
                   </div>
                   <div>
                     <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">Complimentary Shipping</h4>
-                    <p className="mt-1">We offer complimentary express shipping across India. Orders are shipped via trusted partners and typically arrive within 3-5 days of dispatch.</p>
+                    <p className="mt-1">We offer complimentary express shipping across India. Orders are tailored and delivered within 7-10 business days.</p>
                   </div>
                   <div>
                     <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">Returns & Exchanges</h4>
@@ -174,7 +213,7 @@ export default function Footer() {
                   </div>
                   <div>
                     <h4 className="font-serif text-xs uppercase tracking-wider text-brand-gold font-bold">How to alter?</h4>
-                    <p className="mt-1">For post-delivery tailoring alterations, reach out to our WhatsApp customer concierge or email us at <strong className="text-brand-charcoal">vamikabhargavi@gmail.com</strong>. We will arrange collection and alteration.</p>
+                    <p className="mt-1">For post-delivery tailoring alterations, reach out to our customer concierge or email us at <strong className="text-brand-charcoal">vamikabhargavi@gmail.com</strong>. We will arrange collection and alteration.</p>
                   </div>
                 </div>
               )}

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import crypto from "crypto";
 import { v2 as cloudinary } from "cloudinary";
 
 // Configure Cloudinary only if environment variables are present
@@ -38,6 +39,27 @@ export async function POST(req: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: "No file was uploaded." },
+        { status: 400 }
+      );
+    }
+
+    // Security: Enforce maximum file size (5 MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json(
+        { error: "File size exceeds the 5MB limit." },
+        { status: 400 }
+      );
+    }
+
+    // Security: Whitelist allowed image MIME types and extensions
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+    const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp", ".avif"];
+
+    const fileExt = path.extname(file.name || "").toLowerCase();
+    if (!ALLOWED_MIME_TYPES.includes(file.type) || !ALLOWED_EXTENSIONS.includes(fileExt)) {
+      return NextResponse.json(
+        { error: "Invalid file type. Only JPEG, PNG, WEBP, and AVIF images are allowed." },
         { status: 400 }
       );
     }
@@ -78,7 +100,7 @@ export async function POST(req: NextRequest) {
         // Dir exists
       }
 
-      const uniqueFilename = `${Date.now()}-${file.name.replace(/\s+/g, "_")}`;
+      const uniqueFilename = `${Date.now()}-${crypto.randomUUID()}${fileExt}`;
       const filePath = path.join(uploadDir, uniqueFilename);
 
       await writeFile(filePath, buffer);

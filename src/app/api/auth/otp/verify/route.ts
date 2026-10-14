@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import bcrypt from "bcryptjs";
-import { encode } from "next-auth/jwt";
+import { signAuthToken } from "@/lib/auth";
+import { DEMO_OTP, isDummyPhoneNumber, normalizePhoneNumber, getOrCreateDemoUser } from "@/lib/demo-auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,29 +14,49 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 1. Fetch user by phone number
-    let user = await prisma.user.findUnique({
-      where: { phone },
-    });
+    const normalizedPhone = normalizePhoneNumber(phone);
+    const trimmedOtp = String(otp).trim();
 
-    const isDemoBypass = phone === "+919999999999" && otp === "123456";
+    // App Store Reviewer / Demo Login Bypass
+    if (isDummyPhoneNumber(normalizedPhone) && (trimmedOtp === DEMO_OTP || trimmedOtp === "1234")) {
+      const demoUser = await getOrCreateDemoUser(normalizedPhone);
+      const payload = {
+        id: demoUser.id,
+        phone: demoUser.phone,
+        role: demoUser.role,
+        email: demoUser.email,
+        name: demoUser.name,
+        sellerProfileId: demoUser.sellerProfile?.id || null,
+        expires: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 days
+      };
+      const token = signAuthToken(payload);
 
-    if (isDemoBypass && !user) {
-      // Create user if not exists with placeholder credentials to ensure NextAuth session success
-      const placeholderEmail = `user-${phone.replace("+", "")}@boutique.com`;
-      const hashedPassword = await bcrypt.hash(`otp-temp-pwd-${Date.now()}`, 10);
-      user = await prisma.user.create({
-        data: {
-          email: placeholderEmail,
-          password: hashedPassword,
-          phone,
-          resetOtp: null,
-          resetOtpExpires: null,
-        },
+      return NextResponse.json({
+        success: true,
+        message: "Phone number verified successfully (Demo Reviewer Account).",
+        token,
+        user: {
+          id: demoUser.id,
+          phone: demoUser.phone || "",
+          email: demoUser.email || "",
+          name: demoUser.name || "",
+          role: demoUser.role || "CUSTOMER",
+        }
       });
     }
 
-    if (!isDemoBypass && (!user || !user.resetOtp)) {
+    // 1. Fetch user by phone number
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { phone: normalizedPhone },
+          { phone: normalizedPhone.replace("+91", "") }
+        ]
+      },
+      include: { sellerProfile: true },
+    });
+
+    if (!user || !user.resetOtp) {
       return NextResponse.json(
         { error: "No active verification request found for this phone number." },
         { status: 400 }
@@ -44,14 +64,14 @@ export async function POST(req: NextRequest) {
     }
 
     // 2. Validate code and expiration
-    if (!isDemoBypass && user && user.resetOtp !== otp) {
+    if (user.resetOtp !== trimmedOtp) {
       return NextResponse.json(
         { error: "Incorrect verification code. Please try again." },
         { status: 400 }
       );
     }
 
-    if (!isDemoBypass && user && user.resetOtpExpires && new Date() > new Date(user.resetOtpExpires)) {
+    if (user.resetOtpExpires && new Date() > new Date(user.resetOtpExpires)) {
       return NextResponse.json(
         { error: "Verification code has expired. Please request a new one." },
         { status: 400 }
@@ -60,28 +80,27 @@ export async function POST(req: NextRequest) {
 
     // 3. Clear verification fields and capture WhatsApp opt-in consent
     const isOptedIn = !!optInWhatsApp;
-    if (user) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          resetOtp: null,
-          resetOtpExpires: null,
-          optInWhatsApp: isOptedIn,
-          optInDate: isOptedIn ? new Date() : null,
-        },
-      });
-    }
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetOtp: null,
+        resetOtpExpires: null,
+        optInWhatsApp: isOptedIn,
+        optInDate: isOptedIn ? new Date() : null,
+      },
+    });
 
-    // Generate secure base64 token containing user details and expiration
+    // 4. Generate cryptographically signed token containing user details and expiration
     const payload = {
-      id: user?.id || "",
-      phone: user?.phone || "",
-      role: user?.role || "CUSTOMER",
-      email: user?.email || "",
-      name: user?.name || "",
+      id: user.id,
+      phone: user.phone,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+      sellerProfileId: user.sellerProfile?.id || null,
       expires: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 days
     };
-    const token = Buffer.from(JSON.stringify(payload)).toString("base64");
+    const token = signAuthToken(payload);
 
     return NextResponse.json({
       success: true,

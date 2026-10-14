@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,6 +23,153 @@ export async function POST(req: NextRequest) {
         { error: "Action is required." },
         { status: 400 }
       );
+    }
+
+    // Action: Provision / Create Official Seller
+    if (action === "PROVISION_SELLER") {
+      const { email, password, name, shopName, description } = body;
+
+      if (!email || !shopName) {
+        return NextResponse.json(
+          { error: "Email and Shop Name are required." },
+          { status: 400 }
+        );
+      }
+
+      const formattedEmail = email.trim().toLowerCase();
+
+      // Check if user already exists
+      let user = await prisma.user.findUnique({
+        where: { email: formattedEmail },
+        include: { sellerProfile: true },
+      });
+
+      if (user) {
+        // Upgrade existing user to SELLER role
+        const updateData: any = { role: "SELLER" };
+        if (password && password.trim()) {
+          updateData.password = await bcrypt.hash(password.trim(), 10);
+        }
+        if (name && name.trim()) {
+          updateData.name = name.trim();
+        }
+
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: updateData,
+          include: { sellerProfile: true },
+        });
+
+        // Ensure SellerProfile exists
+        let sellerProfile = user.sellerProfile;
+        if (!sellerProfile) {
+          sellerProfile = await prisma.sellerProfile.create({
+            data: {
+              userId: user.id,
+              shopName: shopName.trim(),
+              description: description || "",
+              isApproved: true,
+            },
+          });
+        } else {
+          sellerProfile = await prisma.sellerProfile.update({
+            where: { id: sellerProfile.id },
+            data: {
+              shopName: shopName.trim(),
+              description: description !== undefined ? description : sellerProfile.description,
+              isApproved: true,
+            },
+          });
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: `User ${formattedEmail} upgraded to Seller partner successfully!`,
+          seller: { ...sellerProfile, user: { email: user.email } },
+        });
+      } else {
+        // Create new user with SELLER role
+        if (!password || !password.trim()) {
+          return NextResponse.json(
+            { error: "Password is required for new seller account creation." },
+            { status: 400 }
+          );
+        }
+
+        const hashedPassword = await bcrypt.hash(password.trim(), 10);
+
+        const result = await prisma.$transaction(async (tx) => {
+          const newUser = await tx.user.create({
+            data: {
+              name: name || shopName,
+              email: formattedEmail,
+              password: hashedPassword,
+              role: "SELLER",
+            },
+          });
+
+          const newProfile = await tx.sellerProfile.create({
+            data: {
+              userId: newUser.id,
+              shopName: shopName.trim(),
+              description: description || "",
+              isApproved: true,
+            },
+          });
+
+          return { ...newProfile, user: { email: newUser.email } };
+        });
+
+        return NextResponse.json({
+          success: true,
+          message: `Seller partner ${shopName} created successfully!`,
+          seller: result,
+        });
+      }
+    }
+
+    // Action: Change Seller Password
+    if (action === "CHANGE_SELLER_PASSWORD") {
+      const { sellerId, newPassword } = body;
+
+      if (!sellerId || !newPassword || !newPassword.trim()) {
+        return NextResponse.json(
+          { error: "Seller ID and new password are required." },
+          { status: 400 }
+        );
+      }
+
+      if (newPassword.trim().length < 6) {
+        return NextResponse.json(
+          { error: "Password must be at least 6 characters long." },
+          { status: 400 }
+        );
+      }
+
+      // Find seller profile to locate the linked user account
+      const seller = await prisma.sellerProfile.findUnique({
+        where: { id: sellerId },
+        include: { user: true },
+      });
+
+      if (!seller || !seller.user) {
+        return NextResponse.json(
+          { error: "Seller profile or associated user account not found." },
+          { status: 404 }
+        );
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword.trim(), 10);
+
+      await prisma.user.update({
+        where: { id: seller.user.id },
+        data: { password: hashedPassword },
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: `Password updated successfully for seller "${seller.shopName}" (${seller.user.email}).`,
+      });
     }
 
     // Action: Approve Seller Profile
@@ -197,6 +345,17 @@ export async function POST(req: NextRequest) {
       });
 
       return NextResponse.json({ success: true, product: updated });
+    }
+
+    // Action: Seed / Populate Dummy Data for App Store & Store Demo
+    if (action === "SEED_DUMMY_DATA") {
+      const { populateDummyData } = await import("@/lib/seed-dummy-data");
+      const seedResult = await populateDummyData();
+      return NextResponse.json({
+        success: true,
+        message: seedResult.message || "Dummy data populated successfully!",
+        data: seedResult,
+      });
     }
 
     return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 });

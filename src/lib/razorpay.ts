@@ -91,7 +91,13 @@ export function verifyRazorpaySignature(
     .update(text)
     .digest("hex");
 
-  const isRealValid = generatedSignature === razorpaySignature;
+  let isRealValid = false;
+  if (generatedSignature.length === razorpaySignature.length) {
+    isRealValid = crypto.timingSafeEqual(
+      Buffer.from(generatedSignature, "utf-8"),
+      Buffer.from(razorpaySignature, "utf-8")
+    );
+  }
 
   if (process.env.NODE_ENV !== "production" && !isRealValid) {
     return (
@@ -104,19 +110,24 @@ export function verifyRazorpaySignature(
 }
 
 /**
- * Verifies Razorpay Webhook signature.
+ * Verifies Razorpay Webhook signature using constant-time comparison.
  */
 export function verifyWebhookSignature(
   rawBody: string,
   signature: string,
   webhookSecret: string
 ): boolean {
-  if (!webhookSecret) return false;
+  if (!webhookSecret || !signature) return false;
 
   const generatedSignature = crypto
     .createHmac("sha256", webhookSecret)
     .update(rawBody)
     .digest("hex");
 
-  return generatedSignature === signature;
+  if (generatedSignature.length !== signature.length) return false;
+
+  return crypto.timingSafeEqual(
+    Buffer.from(generatedSignature, "utf-8"),
+    Buffer.from(signature, "utf-8")
+  );
 }

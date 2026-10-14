@@ -648,8 +648,8 @@ function CheckoutContent() {
                       alt={item.productTitle}
                       className="h-16 w-12 object-cover rounded border border-[#E8DFC8] flex-shrink-0 bg-brand-cream-dark"
                     />
-                    <div className="ml-3 flex-1">
-                      <h3 className="font-serif text-xs font-medium text-brand-charcoal line-clamp-1">
+                    <div className="ml-3 flex-1 min-w-0">
+                      <h3 className="font-serif text-xs font-medium text-brand-charcoal leading-snug line-clamp-2">
                         {item.productTitle}
                       </h3>
                       <p className="text-[9px] text-[#A59578] font-sans uppercase tracking-widest mt-0.5">
@@ -660,7 +660,7 @@ function CheckoutContent() {
                         {item.bottomSize && <span>Bottom: {item.bottomSize}</span>}
                       </div>
                     </div>
-                    <span className="font-sans text-xs font-semibold text-brand-charcoal ml-2">
+                    <span className="font-sans text-xs font-semibold text-brand-charcoal ml-2 shrink-0 whitespace-nowrap text-right">
                       Rs. {(item.unitPrice * item.quantity).toLocaleString("en-IN")}
                     </span>
                   </div>

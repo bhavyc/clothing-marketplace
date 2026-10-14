@@ -9,6 +9,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+function escapeHtml(str: string | null | undefined): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function sendOrderConfirmationEmail(orderIdOrNumber: string) {
   try {
     // 1. Fetch order details from database
@@ -98,10 +108,10 @@ export async function sendOrderConfirmationEmail(orderIdOrNumber: string) {
               Order Confirmed
             </h3>
             <div style="font-family: sans-serif; font-size: 12px; color: #888888; text-align: center; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em;">
-              Order ID: <strong style="color: #1A1A1A;">${order.orderNumber}</strong>
+              Order ID: <strong style="color: #1A1A1A;">${escapeHtml(order.orderNumber)}</strong>
             </div>
             <p style="font-family: sans-serif; font-size: 13px; color: #4A4A4A; line-height: 1.6; text-align: center; margin-bottom: 30px;">
-              Thank you for shopping with us, <strong>${order.customerName}</strong>. Your order has been successfully placed. Below are your order summary and delivery details.
+              Thank you for shopping with us, <strong>${escapeHtml(order.customerName)}</strong>. Your order has been successfully placed. Below are your order summary and delivery details.
             </p>
 
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
@@ -155,10 +165,10 @@ export async function sendOrderConfirmationEmail(orderIdOrNumber: string) {
             </h4>
             <div style="font-size: 13px; color: #4A4A4A; line-height: 1.6;">
               <strong>Delivery Address:</strong><br />
-              ${order.customerName}<br />
-              ${order.shippingAddress}<br />
-              ${order.city}, ${order.state} - ${order.pincode}<br />
-              <strong>Phone:</strong> ${order.customerPhone}
+              ${escapeHtml(order.customerName)}<br />
+              ${escapeHtml(order.shippingAddress)}<br />
+              ${escapeHtml(order.city)}, ${escapeHtml(order.state)} - ${escapeHtml(order.pincode)}<br />
+              <strong>Phone:</strong> ${escapeHtml(order.customerPhone)}
             </div>
           </div>
 
@@ -230,7 +240,7 @@ export async function sendShippingConfirmationEmail(orderId: string) {
               Your Order is on the Way
             </h3>
             <p style="font-family: sans-serif; font-size: 13px; color: #4A4A4A; line-height: 1.6; text-align: center; margin-bottom: 30px;">
-              Great news, <strong>${order.customerName}</strong>! Your order <strong>${order.orderNumber}</strong> has been shipped by the seller and is currently in transit.
+              Great news, <strong>${escapeHtml(order.customerName)}</strong>! Your order <strong>${escapeHtml(order.orderNumber)}</strong> has been shipped by the seller and is currently in transit.
             </p>
 
             <!-- Tracking Card -->
@@ -239,10 +249,10 @@ export async function sendShippingConfirmationEmail(orderId: string) {
                 Tracking Information
               </p>
               <h4 style="font-size: 16px; font-weight: bold; color: #1A1A1A; margin: 0 0 8px 0;">
-                ${order.trackingCompany || "Standard Delivery"}
+                ${escapeHtml(order.trackingCompany || "Standard Delivery")}
               </h4>
               <p style="font-size: 13px; color: #4A4A4A; margin: 0 0 15px 0;">
-                Tracking Number: <strong style="font-family: monospace; font-size: 14px; color: #1A1A1A;">${order.trackingNumber}</strong>
+                Tracking Number: <strong style="font-family: monospace; font-size: 14px; color: #1A1A1A;">${escapeHtml(order.trackingNumber)}</strong>
               </p>
               <div style="font-size: 11px; color: #666666;">
                 Use the tracking number on the courier partner's portal to track delivery status.
@@ -266,9 +276,9 @@ export async function sendShippingConfirmationEmail(orderId: string) {
               Delivery Address
             </h4>
             <div style="font-size: 13px; color: #4A4A4A; line-height: 1.6;">
-              ${order.customerName}<br />
-              ${order.shippingAddress}<br />
-              ${order.city}, ${order.state} - ${order.pincode}
+              ${escapeHtml(order.customerName)}<br />
+              ${escapeHtml(order.shippingAddress)}<br />
+              ${escapeHtml(order.city)}, ${escapeHtml(order.state)} - ${escapeHtml(order.pincode)}
             </div>
           </div>
 

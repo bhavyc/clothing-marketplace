@@ -31,10 +31,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "No account found with this email address." },
-        { status: 404 }
-      );
+      // Return generic message to prevent user enumeration attacks
+      return NextResponse.json({
+        success: true,
+        message: "If an account exists with this email address, an OTP has been sent.",
+      });
     }
 
     // 2. Generate 6-digit OTP

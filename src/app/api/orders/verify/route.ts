@@ -42,62 +42,8 @@ export async function POST(req: NextRequest) {
 
     if (!isValid) {
       console.warn(`Signature verification failed for order ${orderNumber}`);
-      
-      // Edge Case: Mark order failed and rollback stock if signature fails
-      await prisma.$transaction(
-        async (tx) => {
-        await tx.order.update({
-          where: { id: order.id },
-          data: {
-            paymentStatus: "FAILED",
-            status: "CANCELLED",
-          },
-        });
-
-        // Restore stock
-        for (const item of order.items) {
-          await tx.productVariant.update({
-            where: { id: item.variantId },
-            data: { stock: { increment: item.quantity } },
-          });
-        }
-
-        // Refund wallet paid balance
-        if (order.walletPaid > 0 && order.userId) {
-          await tx.user.update({
-            where: { id: order.userId },
-            data: { walletBalance: { increment: order.walletPaid } },
-          });
-        }
-
-        // Restore coupon
-        if (order.couponUsed && order.userId) {
-          const coupon = await tx.coupon.findUnique({
-            where: { code: order.couponUsed },
-          });
-          if (coupon) {
-            await tx.coupon.update({
-              where: { id: coupon.id },
-              data: { currentUsage: { decrement: 1 } },
-            });
-            await tx.couponSent.updateMany({
-              where: {
-                userId: order.userId,
-                couponId: coupon.id,
-                used: true,
-              },
-              data: { used: false },
-            });
-          }
-        }
-      },
-      {
-        maxWait: 15000,
-        timeout: 30000,
-      });
-
       return NextResponse.json(
-        { error: "Signature verification failed. Potential fraud detected." },
+        { error: "Signature verification failed. Payment not confirmed." },
         { status: 400 }
       );
     }
